@@ -1,0 +1,63 @@
+---
+
+- name: Initialize
+  deploy: "path={{ project_root }} state=present"
+
+- name: Remove previous (failed) build dir
+  file: "path={{ project_build_path }} state=absent"
+
+- name: Clone project files
+  git: "repo={{ project_git_repo }} dest={{ project_remote_source_path }} version={{ project_version }}"
+  when: project_deploy_strategy == 'git'
+
+- name: Rsync project files
+  synchronize: "src={{ project_local_path }} dest={{ project_source_path }} recursive=yes "
+  when: project_deploy_strategy == 'rsync'
+
+- name: Copy files to new build dir
+  command: "cp -r {{ project_source_path }} {{ project_build_path }}"
+
+- name: Remove .git folder from new release folder
+  file: "path={{ project_build_path }}/.git state=absent"
+
+- name: Run pre_build_commands in the build_path
+  command: "{{ item }} chdir={{ project_build_path }}"
+  with_items: project_pre_build_commands
+  environment: project_environment
+
+- name: Copy project files
+  copy: src={{ item.src }} dest={{ project_build_path}}/{{ item.dest }} mode={{ item.mode|default('0644') }}
+  with_items: project_files
+
+- name: Copy project templates
+  template: src={{ item.src }} dest={{ project_build_path}}/{{ item.dest }} mode={{ item.mode|default('0644') }}
+  with_items: project_templates
+
+- name: Do composer install
+  command: "{{ project_command_for_composer_install }} chdir={{ project_build_path }}"
+  environment: project_environment
+  when: project_has_composer
+
+- name: Ensure shared sources are present
+  file: "path='{{ deploy.shared_path }}/{{ item.src }}' state=directory"
+  with_items: project_shared_children
+
+- name: Ensure shared paths are absent
+  file: "path='{{ project_build_path }}/{{ item.path }}' state=absent"
+  with_items: project_shared_children
+
+- name: Create shared symlinks
+  file: "path='{{ project_build_path }}/{{ item.path }}' src='{{ deploy.shared_path }}/{{ item.src }}' state=link"
+  with_items: project_shared_children
+
+- name: Move build path to current release path
+  command: mv {{ project_build_path }} {{ deploy.new_release_path }}
+
+- name: Run post_build_commands in the new_release_path #(path calculated by the deploy module)
+  command: "{{ item }} chdir={{ deploy.new_release_path }}"
+  with_items: project_post_build_commands
+  environment: project_environment
+
+- name: Finalize the deploy
+  file: src={{ deploy.new_release_path }} dest={{ deploy.current_path }} state=link
+  when: project_finalize
