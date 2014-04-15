@@ -98,7 +98,7 @@ the release. For example a logging directory or an uploads folder. These live in
 
 The project_environment is a list of environment variables added to the various *_commands
 
-    project_environment: ~
+    project_environment: {}
 
 **Example:**
 

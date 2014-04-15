@@ -58,9 +58,10 @@ project_templates: []
 project_shared_children: []
 
 # The project_environment is a list of environment variables added to the various *_commands
+# Example:
 # project_environment:
 #   SYMFONY_ENV: "prod"
-project_environment: ~
+project_environment: {}
 
 # There are a few moments in this role where arbitrary command(s) can be run. These commands receive
 # the "project_environment" so deploys for different stages can be done by changing this .
