@@ -21,16 +21,18 @@ These variables must be set, they have no defaults:
     project_deploy_strategy: "git" or "rsync"
 
 If you use the "git" strategy:
-- you must also set a repository
+you must also set a repository
 
     project_git_repo: "git_repository"
 
-- you can set the git ref to deploy (can be a branch, tag or commit hash), defaults to "master"
+you can set the git ref to deploy (can be a branch, tag or commit hash), defaults to "master"
 
     project_version: "master"
 
 If you use the "rsync" strategy:
-- you must set the path to your local source (the default assumes your playbook is located in /ansible/ )
+you must set the path to your local source
+
+The default assumes your playbook is located in /ansible/
 
     project_local_path: "../"
 
