@@ -18,7 +18,7 @@ Role Variables
 These variables must be set, they have no defaults:
 
     project_root: "path_to_project_on_the_target_machine"
-    project_deploy_strategy: "git" or "rsync"
+    project_deploy_strategy: "git" or "synchronize"
 
 If you use the "git" strategy:
 you must also set a repository
@@ -29,12 +29,18 @@ you can set the git ref to deploy (can be a branch, tag or commit hash), default
 
     project_version: "master"
 
-If you use the "rsync" strategy:
-you must set the path to your local source
+When using the synchonize method, we recommend using a .rsync-filter file in the source folder,
+to exclude .git and other unneeded data to be transferred.
 
-The default assumes your playbook is located in /ansible/
+If you use the "synchronize" strategy:
+you can set a timeout for the synchonize module
+
+    project_deploy_synchronize_timeout: 30
+
+you must set the path to your local source (default assumes the playbook in /ansible/)
 
     project_local_path: "../"
+
 
 The source_path is used to fetch the tags from git, or synchronise via rsync. This way
 you do not have to download/sync the entire project on every deploy

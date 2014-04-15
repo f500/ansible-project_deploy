@@ -11,8 +11,8 @@
   when: project_deploy_strategy == 'git'
 
 - name: Rsync project files
-  synchronize: "src={{ project_local_path }} dest={{ project_source_path }} recursive=yes "
-  when: project_deploy_strategy == 'rsync'
+  synchronize: "src={{ project_local_path }} dest={{ project_source_path }} rsync_timeout={{ project_deploy_synchronize_timeout }} recursive=yes "
+  when: project_deploy_strategy == 'synchronize'
 
 - name: Copy files to new build dir
   command: "cp -r {{ project_source_path }} {{ project_build_path }}"
