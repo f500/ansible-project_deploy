@@ -58,16 +58,18 @@ Default values to run composer install
     project_command_for_composer_install: "{{ project_composer_binary }} install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader --no-scripts"
 
 All the files to copy to the remote system on deploy. These could contain config files.
-_Example:_
-_project_files:_
-_  - name: "some_file"_           // <- optional, for your own reference and readability
-_    src: "local-path-to-file"_   // <- relative or absolute, just like Ansible
-_    dest: "remote-path-to-file"_
-_  - name: "some_other_file"_
-_    src: "local-path-to-other-file"_
-_    dest: "remote-path-to-other-file"_
 
     project_files: []
+
+**Example:**
+
+    project_files:
+      - name: "some_file"           // <- optional, for your own reference and readability
+        src: "local-path-to-file"   // <- relative or absolute, just like Ansible
+        dest: "remote-path-to-file"
+      - name: "some_other_file"
+        src: "local-path-to-other-file"
+        dest: "remote-path-to-other-file"
 
 All the templates to copy to the remote system on deploy. These could contain config files.
 Works the same as the project_files
@@ -76,40 +78,51 @@ Works the same as the project_files
 
 The shared_children is a list of all files/folders in your project that need to be linked to someplace outside
 the release. For example a logging directory or an uploads folder. These live in "/shared"
-_Example:_
-_project_shared_children:_
-_  - path: "/app/sessions"_
-_    src: "sessions"_
-_  - path: "/web/uploads"_
-_    src: "uploads"_
 
     project_shared_children: []
 
+**Example:**
+
+    project_shared_children:
+      - path: "/app/sessions"
+        src: "sessions"
+      - path: "/web/uploads"
+        src: "uploads"
+
+
 The project_environment is a list of environment variables added to the various *_commands
-_Example:_
-_project_environment:_
-_  SYMFONY_ENV: "prod"_
 
     project_environment: ~
 
+**Example:**
+
+    project_environment:
+      SYMFONY_ENV: "prod"
+
+
 There are a few moments in this role where arbitrary command(s) can be run. These commands receive
-the "project_environment" so deploys for different stages can be done by changing this .
-_Example:_
-_project_post_build_commands:_
-_  - "app/console cache:clear"_
-_  - "app/console doctrine:migrations:migrate --no-interaction"_
-_  - "app/console assets:install"_
-_  - "app/console assetic:dump"_
+the "project_environment" so deploys for different stages can be done by changing this.
 
     project_pre_build_commands: []
     project_post_build_commands: []
 
-At the end of the role, the "current" symlink is set to the release. If you need to perform
-your own actions before this happens, set "project_finalize" to false, and when you're ready,
-perform the symlink task yourself:
-_- file: src={{ deploy.new_release_path }} dest={{ deploy.current_path }} state=link_
+**Example:**
 
-    project_finalize: true
+    project_post_build_commands:
+      - "app/console cache:clear"
+      - "app/console doctrine:migrations:migrate --no-interaction"
+      - "app/console assets:install"
+      - "app/console assetic:dump"
+
+At the end of the role, the "current" symlink is set to the release. If you need to perform
+your own actions before this happens, set "project_finalize" to false.
+
+     project_finalize: true
+
+When you're ready, perform the symlink task yourself (in post_tasks for example):
+
+    - file: src={{ deploy.new_release_path }} dest={{ deploy.current_path }} state=link
+
 
 Dependencies
 ------------
