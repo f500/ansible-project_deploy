@@ -7,7 +7,7 @@
   file: "path={{ project_build_path }} state=absent"
 
 - name: Clone project files
-  git: "repo={{ project_git_repo }} dest={{ project_remote_source_path }} version={{ project_version }}"
+  git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
   when: project_deploy_strategy == 'git'
 
 - name: Rsync project files
