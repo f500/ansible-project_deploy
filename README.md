@@ -1,7 +1,7 @@
 project_deploy
 ========
 
-Deploy a project
+Deploy a project with Ansible
 
 Requirements
 ------------
