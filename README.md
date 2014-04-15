@@ -135,6 +135,12 @@ the remote user to be able to clone the project (with SSH keys for example).
       roles:
          - f500.project_deploy
 
+You can also use the deploy module included with the role to cleanup old releases:
+
+      post_tasks:
+        - name: Remove old releases
+          deploy: "path={{ project_root }} state=cleanup"
+
 License
 -------
 

@@ -15,29 +15,28 @@ galaxy_info:
     - name: GenericUNIX
       versions:
         - any
-  - name: Fedora
-    versions:
-      - all
-  - name: opensuse
-    versions:
-      - all
-  - name: GenericBSD
-    versions:
-      - any
-  - name: FreeBSD
-    versions:
-      - all
-  - name: Ubuntu
-    versions:
-      - all
-  - name: SLES
-    versions:
-      - all
-  - name: GenericLinux
-    versions:
-      - any
-  - name: Debian
-    versions:
-      - all
-
+    - name: Fedora
+      versions:
+        - all
+    - name: opensuse
+      versions:
+        - all
+    - name: GenericBSD
+      versions:
+        - any
+    - name: FreeBSD
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: SLES
+      versions:
+        - all
+    - name: GenericLinux
+      versions:
+        - any
+    - name: Debian
+      versions:
+        - all
 dependencies: []
