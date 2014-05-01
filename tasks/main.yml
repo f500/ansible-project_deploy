@@ -6,9 +6,24 @@
 - name: Remove previous (failed) build dir
   file: "path={{ project_build_path }} state=absent"
 
+- name: Find out if we need to checkout the latest tag
+  set_fact:
+    project_version: master
+    project_latest: true
+  when: project_deploy_strategy == 'git' and project_version == 'latest'
+
 - name: Clone project files
   git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
   when: project_deploy_strategy == 'git'
+
+- name: Get the latest tag
+  shell: git describe --tags `git rev-list --tags --max-count=1` chdir={{ project_source_path }}
+  register: project_latest_tag
+  when: project_latest is defined
+
+- name: Checkout latest tag
+  git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_latest_tag.stdout }}"
+  when: project_latest is defined
 
 - name: Rsync project files
   synchronize: "src={{ project_local_path }} dest={{ project_source_path }} rsync_timeout={{ project_deploy_synchronize_timeout }} recursive=yes "
