@@ -10,6 +10,9 @@
 # - you can set the git ref to deploy (can be a branch, tag or commit hash)
 project_version: "master"
 
+# For git, the .git folder is automatically removed
+project_remove_git_folder: true
+
 # If you use the "rsync" strategy:
 # - you can set a timeout for the synchonize module
 project_deploy_synchronize_timeout: 30

@@ -19,6 +19,7 @@
 
 - name: Remove .git folder from new release folder
   file: "path={{ project_build_path }}/.git state=absent"
+  when: project_remove_git_folder
 
 - name: Run pre_build_commands in the build_path
   command: "{{ item }} chdir={{ project_build_path }}"
