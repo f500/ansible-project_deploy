@@ -149,7 +149,7 @@ the remote user to be able to clone the project (with SSH keys for example).
 
       vars:
         project_root: /home/deploy/
-        project_deploy_strategy: rsync
+        project_deploy_strategy: synchronize
 
       roles:
          - f500.project_deploy
