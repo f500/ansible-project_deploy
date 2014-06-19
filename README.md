@@ -29,6 +29,9 @@ you can set the git ref to deploy (can be a branch, tag or commit hash), default
 
     project_version: "master"
 
+When the version is set to "latest", git will checkout the latest tag it can find in your
+repository. Mind you are therefore unable to checkout a git branch called "latest".
+
 When using the synchonize method, we recommend using a .rsync-filter file in the source folder,
 to exclude .git and other unneeded data to be transferred.
 
