@@ -4,14 +4,16 @@
 # project_root: "path_to_project_on_the_target_machine"
 # project_deploy_strategy: "git" or "synchronize"
 
+
 # If you use the "git" strategy:
 # - you must set a repository (no default)
 # project_git_repo: "git_repository"
 # - you can set the git ref to deploy (can be a branch, tag or commit hash)
 project_version: "master"
 
+# DEPRECATED
 # For git, the .git folder is automatically removed
-project_remove_git_folder: true
+#project_remove_git_folder: true
 
 # If you use the "rsync" strategy:
 # - you can set a timeout for the synchonize module
@@ -21,24 +23,39 @@ project_local_path: "../"
 
 # The source_path is used to fetch the tags from git, or synchronise via rsync. This way
 # you do not have to download/sync the entire project on every deploy
-project_source_path: "{{ project_root }}/source"
+project_source_path: "{{ project_root }}/shared/source"
 
+# Files or folders to remove from the source when deploying
+project_unwanted_items: [ '.git' ]
+
+# DEPRECATED
 # The build_path is used to build your project in, prior to moving it to the release folder.
 # If it exists, this path will be deleted before a new build is started
 # (under the assumption that it contains a failed previous build)
-project_build_path: "{{ project_root }}/build"
+# project_build_path: "{{ project_root }}/build"
 
 # The project does not assume any package manager, you can enable whichever one(s) you use.
 project_has_composer: false
+project_has_npm: false
+project_has_bower: false
 
 # Default values to run composer install
 project_composer_binary: composer.phar
 project_command_for_composer_install: "{{ project_composer_binary }} install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader --no-scripts"
 
+# Default values to run npm install
+project_npm_binary: npm
+project_command_for_npm_install: "{{ project_npm_binary }} install --production"
+
+# Default values to run bower install
+project_bower_binary: bower
+project_command_for_bower_install: "{{ project_bower_binary }} install --production --config.interactive=false"
+
 # All the files to copy to the remote system on deploy. These could contain config files.
 # Example:
 # project_files:
 #   - name: "some_file"           // <- optional, for your own reference and readability
+#     type: "file" / "directory"  // <- optional, defaults to "directory"
 #     src: "local-path-to-file"   // <- relative or absolute, just like Ansible
 #     dest: "remote-path-to-file"
 #   - name: "some_other_file"
@@ -77,8 +94,9 @@ project_environment: {}
 project_pre_build_commands: []
 project_post_build_commands: []
 
-# At the end of the role, the "current" symlink is set to the release. If you need to perform
-# your own actions before this happens, set "project_finalize" to false, and when you're ready,
-# perform the symlink task yourself:
+# At the end of the role, the unfinished_filename is removed and the "current" symlink is set to
+# the release. If you need to perform your own actions before this happens, set "project_finalize"
+# to false, and when you're ready, perform these tasks yourself:
+# - file: path={{ deploy.new_release_path }}/{{ deploy.unfinished_filename }} state=absent
 # - file: src={{ deploy.new_release_path }} dest={{ deploy.current_path }} state=link
 project_finalize: true

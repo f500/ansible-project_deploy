@@ -3,6 +3,22 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 1.0.0
+
+- added parameter unfinished_filename
+- added fact deploy.unfinished_filename
+- added state=query
+- added project_unwanted_items
+- added npm and bower package manager support
+- added 'type' option to project_shared_children (file/directory)
+- added a "unfinished_filename" to indicate a deploying state
+- moved project_pre_build_commands after files/template copy
+- changed state=cleanup to state=clean
+- removed system folder and system_path variable
+- removed "project_build_path"
+- moved source folder to project_root/shared/source
+- removed project_remove_git_folder (see project_unwanted_items)
+
 Requirements
 ------------
 
@@ -45,8 +61,14 @@ you must set the path to your local source (default assumes the playbook in /ans
 The source_path is used to fetch the tags from git, or synchronise via rsync. This way
 you do not have to download/sync the entire project on every deploy
 
-    project_source_path: "{{ project_root }}/source"
+    project_source_path: "{{ project_root }}/shared/source"
 
+Files or folders to remove from the source when deploying
+
+    project_unwanted_items: [ '.git' ]
+
+
+**DEPRECATED**
 The build_path is used to build your project in, prior to moving it to the release folder.
 If it exists, this path will be deleted before a new build is started
 (under the assumption that it contains a failed previous build)
@@ -57,11 +79,24 @@ The project does not assume any package manager, you can enable whichever one(s)
 (only composer for the first release)
 
     project_has_composer: false
+    project_has_npm: false
+    project_has_bower: false
 
 Default values to run composer install
 
     project_composer_binary: composer.phar
     project_command_for_composer_install: "{{ project_composer_binary }} install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader --no-scripts"
+
+Default values to run npm install
+
+    project_npm_binary: npm
+    project_command_for_npm_install: "{{ project_npm_binary }} install --production"
+
+Default values to run bower install
+
+    project_bower_binary: bower
+    project_command_for_bower_install: "{{ project_bower_binary }} install --production --config.interactive=false"
+
 
 All the files to copy to the remote system on deploy. These could contain config files.
 
@@ -154,11 +189,11 @@ the remote user to be able to clone the project (with SSH keys for example).
       roles:
          - f500.project_deploy
 
-You can also use the deploy module included with the role to cleanup old releases:
+You can also use the deploy module included with the role to clean up old releases:
 
       post_tasks:
         - name: Remove old releases
-          deploy: "path={{ project_root }} state=cleanup"
+          deploy: "path={{ project_root }} state=clean"
 
 License
 -------

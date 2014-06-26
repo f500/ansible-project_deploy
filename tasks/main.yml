@@ -3,9 +3,6 @@
 - name: Initialize
   deploy: "path={{ project_root }} state=present"
 
-- name: Remove previous (failed) build dir
-  file: "path={{ project_build_path }} state=absent"
-
 - name: Clone project files
   git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
   when: project_deploy_strategy == 'git'
@@ -14,50 +11,64 @@
   synchronize: "src={{ project_local_path }} dest={{ project_source_path }} rsync_timeout={{ project_deploy_synchronize_timeout }} recursive=yes "
   when: project_deploy_strategy == 'synchronize'
 
+- name: write unfinished file
+  file: "path={{ project_source_path }}/{{ deploy.unfinished_filename }} state=touch"
+
 - name: Copy files to new build dir
-  command: "cp -r {{ project_source_path }} {{ project_build_path }}"
+  command: "cp -pr {{ project_source_path }} {{ deploy.new_release_path }}"
 
-- name: Remove .git folder from new release folder
-  file: "path={{ project_build_path }}/.git state=absent"
-  when: project_remove_git_folder
-
-- name: Run pre_build_commands in the build_path
-  command: "{{ item }} chdir={{ project_build_path }}"
-  with_items: project_pre_build_commands
-  environment: project_environment
+- name: Remove unwanted files/folders from new release
+  file: "path={{ deploy.new_release_path }}/{{ item }} state=absent"
+  with_items: project_unwanted_items
 
 - name: Copy project files
-  copy: src={{ item.src }} dest={{ project_build_path}}/{{ item.dest }} mode={{ item.mode|default('0644') }}
+  copy: src={{ item.src }} dest={{ deploy.new_release_path }}/{{ item.dest }} mode={{ item.mode|default('0644') }}
   with_items: project_files
 
 - name: Copy project templates
-  template: src={{ item.src }} dest={{ project_build_path}}/{{ item.dest }} mode={{ item.mode|default('0644') }}
+  template: src={{ item.src }} dest={{ deploy.new_release_path }}/{{ item.dest }} mode={{ item.mode|default('0644') }}
   with_items: project_templates
 
+- name: Run pre_build_commands in the new_release_path
+  command: "{{ item }} chdir={{ deploy.new_release_path }}"
+  with_items: project_pre_build_commands
+  environment: project_environment
+
 - name: Do composer install
-  command: "{{ project_command_for_composer_install }} chdir={{ project_build_path }}"
+  command: "{{ project_command_for_composer_install }} chdir={{ deploy.new_release_path }}"
   environment: project_environment
   when: project_has_composer
 
+- name: Do npm install
+  command: "{{ project_command_for_npm_install }} chdir={{ deploy.new_release_path }}"
+  environment: project_environment
+  when: project_has_npm
+
+- name: Do bower install
+  command: "{{ project_command_for_bower_install }} chdir={{ deploy.new_release_path }}"
+  environment: project_environment
+  when: project_has_bower
+
 - name: Ensure shared sources are present
-  file: "path='{{ deploy.shared_path }}/{{ item.src }}' state=directory"
+  file: "path='{{ deploy.shared_path }}/{{ item.src }}' state={{ item.type|default('directory') }}"
   with_items: project_shared_children
 
 - name: Ensure shared paths are absent
-  file: "path='{{ project_build_path }}/{{ item.path }}' state=absent"
+  file: "path='{{ deploy.new_release_path }}/{{ item.path }}' state=absent"
   with_items: project_shared_children
 
 - name: Create shared symlinks
-  file: "path='{{ project_build_path }}/{{ item.path }}' src='{{ deploy.shared_path }}/{{ item.src }}' state=link"
+  file: "path='{{ deploy.new_release_path }}/{{ item.path }}' src='{{ deploy.shared_path }}/{{ item.src }}' state=link"
   with_items: project_shared_children
 
-- name: Move build path to current release path
-  command: mv {{ project_build_path }} {{ deploy.new_release_path }}
-
-- name: Run post_build_commands in the new_release_path #(path calculated by the deploy module)
+- name: Run post_build_commands in the new_release_path
   command: "{{ item }} chdir={{ deploy.new_release_path }}"
   with_items: project_post_build_commands
   environment: project_environment
+
+- name: Remove unfinished file
+  file: "path={{ deploy.new_release_path }}/{{ deploy.unfinished_filename }} state=absent"
+  when: project_finalize
 
 - name: Finalize the deploy
   file: src={{ deploy.new_release_path }} dest={{ deploy.current_path }} state=link
