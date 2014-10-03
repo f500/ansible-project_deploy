@@ -11,6 +11,12 @@
 # - you can set the git ref to deploy (can be a branch, tag or commit hash)
 project_version: "master"
 
+# Adds the hostkey for the repo url if not already added
+project_accept_keyhost: no
+
+# Specify an optional private key file to use for the checkout. (added in Ansible 1.5)
+project_key_file: None
+
 # DEPRECATED
 # For git, the .git folder is automatically removed
 #project_remove_git_folder: true
