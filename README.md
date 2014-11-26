@@ -109,8 +109,8 @@ All the files to copy to the remote system on deploy. These could contain config
 **Example:**
 
     project_files:
-      - name: "some_file"           // <- optional, for your own reference and readability
-        src: "local-path-to-file"   // <- relative or absolute, just like Ansible
+      - name: "some_file"           // optional, for your own reference and readability
+        src: "local-path-to-file"   // relative or absolute, just like Ansible
         dest: "remote-path-to-file"
       - name: "some_other_file"
         src: "local-path-to-other-file"
@@ -164,13 +164,13 @@ your own actions before this happens, set "project_finalize" to false.
 
      project_finalize: true
 
-**Example Version < v2.0.0:**
+**Example (before v2.0.0):**
 
 When you're ready, perform the symlink task yourself (in post_tasks for example):
 
     - file: src={{ deploy.new_release_path }} dest={{ deploy.current_path }} state=link
 
-**Example Version >= v2.0.0:**
+**Example (after v2.0.0):**
 
 When you're ready, finalize the deploy with the module:
 
@@ -180,8 +180,8 @@ When you're ready, finalize the deploy with the module:
 Dependencies
 ------------
 
-<  v2.0.0 : none
->= v2.0.0 : f500.project_deploy_module
+Before v2.0.0 : none
+After v2.0.0 : f500.project_deploy_module
 
 
 Example Playbook
