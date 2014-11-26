@@ -55,7 +55,6 @@ project_command_for_bower_install: "{{ project_bower_binary }} install --product
 # Example:
 # project_files:
 #   - name: "some_file"           // <- optional, for your own reference and readability
-#     type: "file" / "directory"  // <- optional, defaults to "directory"
 #     src: "local-path-to-file"   // <- relative or absolute, just like Ansible
 #     dest: "remote-path-to-file"
 #   - name: "some_other_file"
@@ -67,12 +66,14 @@ project_files: []
 # Works the same as the project_files
 project_templates: []
 
-# The shared_children is a list of all files/folders in your project that need to be linked to someplace outside
-# the release. For example a logging directory or an uploads folder. These live in "/shared"
+# The shared_children is a list of all files/folders in your project that need to be linked to a path in "/shared". 
+# For example a sessions directory or an uploads folder.. They are created if they don't exist, with the type 
+# specified in the "type" key (file or directory).
 # Example:
 # project_shared_children:
 #   - path: "/app/sessions"
 #     src: "sessions"
+#     type: "file" / "directory"  // <- optional, defaults to "directory"
 #   - path: "/web/uploads"
 #     src: "uploads"
 project_shared_children: []
