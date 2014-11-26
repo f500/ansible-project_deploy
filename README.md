@@ -3,10 +3,9 @@ project_deploy
 
 Deploy a project with Ansible
 
-### Changelog 2.0.0
+### Changelog 2.0.0  BC BREAK. Set your galaxy version to v1.0.0 for the old deploy module.
 - remove the deploy module (it has been added to a separate module in f500.project_deploy_module)
 - module renamed to deploy_helper
-- 
 
 ### Changelog 1.0.0
 
