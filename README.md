@@ -3,6 +3,11 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 2.0.0
+- remove the deploy module (it has been added to a separate module in f500.project_deploy_module)
+- module renamed to deploy_helper
+- 
+
 ### Changelog 1.0.0
 
 - added parameter unfinished_filename
@@ -160,15 +165,25 @@ your own actions before this happens, set "project_finalize" to false.
 
      project_finalize: true
 
+**Example Version < v2.0.0:**
+
 When you're ready, perform the symlink task yourself (in post_tasks for example):
 
     - file: src={{ deploy.new_release_path }} dest={{ deploy.current_path }} state=link
+
+**Example Version >= v2.0.0:**
+
+When you're ready, finalize the deploy with the module:
+
+    - deploy_helper: path={{ project_root }} release={{ deploy_helper.new_release }} state=finalize
 
 
 Dependencies
 ------------
 
-None.
+<  v2.0.0 : none
+>= v2.0.0 : f500.project_deploy_module
+
 
 Example Playbook
 -------------------------
@@ -189,11 +204,12 @@ the remote user to be able to clone the project (with SSH keys for example).
       roles:
          - f500.project_deploy
 
-You can also use the deploy module included with the role to clean up old releases:
+You can also use the deploy module included with the role to clean up old releases: 
+(this is done on finalize by default)
 
       post_tasks:
         - name: Remove old releases
-          deploy: "path={{ project_root }} state=clean"
+          deploy_helper: "path={{ project_root }} state=clean"
 
 License
 -------
