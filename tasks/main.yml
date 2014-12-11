@@ -8,7 +8,7 @@
   when: project_deploy_strategy == 'git'
 
 - name: Rsync project files
-  synchronize: "src={{ project_local_path }} dest={{ project_source_path }} rsync_timeout={{ project_deploy_synchronize_timeout }} recursive=yes "
+  synchronize: "src={{ project_local_path }} dest={{ project_source_path }} rsync_timeout={{ project_deploy_synchronize_timeout }} delete={{ project_deploy_synchronize_delete }} recursive=yes "
   when: project_deploy_strategy == 'synchronize'
 
 - name: write unfinished file
