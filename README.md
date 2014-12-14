@@ -57,6 +57,10 @@ you can set a timeout for the synchonize module
 
     project_deploy_synchronize_timeout: 30
 
+and you can also tell synchronize to delete files that don't exist on source:
+
+    project_deploy_synchronize_delete: true  # defaults to false
+
 you must set the path to your local source (default assumes the playbook in /ansible/)
 
     project_local_path: "../"

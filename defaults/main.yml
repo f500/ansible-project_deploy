@@ -18,6 +18,8 @@ project_version: "master"
 # If you use the "rsync" strategy:
 # - you can set a timeout for the synchonize module
 project_deploy_synchronize_timeout: 30
+# - you can also delete files that don't exist on source after synchronizing
+project_deploy_synchronize_delete: false
 # - you must set the path to your local source (the default assumes your playbook is located in /ansible/ )
 project_local_path: "../"
 
