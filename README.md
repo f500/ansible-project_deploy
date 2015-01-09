@@ -104,7 +104,18 @@ Default values to run bower install
 
     project_bower_binary: bower
     project_command_for_bower_install: "{{ project_bower_binary }} install --production --config.interactive=false"
+    
+To speed up composer/npm/bower install it is possible to copy the vendor/node_modules/component directories from the previous release.
 
+    project_copy_previous_composer_vendors: true
+    project_copy_previous_npm_modules: true
+    project_copy_previous_bower_components: true
+    
+You can also change the path of the installed vendors:
+
+    project_composer_vendor_path: new/dir/relative/to/{{ deploy_helper.new_release_path }}/vendor
+    project_npm_modules_path: node_modules
+    project_bower_components_path: components
 
 All the files to copy to the remote system on deploy. These could contain config files.
 
