@@ -3,6 +3,9 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 2.1.0
+- added option to copy Composer, NPM and Bower folders from previous release
+
 ### Changelog 2.0.0  BC BREAK. Set your galaxy version to v1.0.0 for the old deploy module.
 - remove the deploy module (it has been added to a separate module in f500.project_deploy_module)
 - module renamed to deploy_helper
@@ -40,20 +43,18 @@ These variables must be set, they have no defaults:
     project_root: "path_to_project_on_the_target_machine"
     project_deploy_strategy: "git" or "synchronize"
 
-If you use the "git" strategy:
-you must also set a repository
+If you use the "git" strategy, you must also set a repository:
 
     project_git_repo: "git_repository"
 
-you can set the git ref to deploy (can be a branch, tag or commit hash), defaults to "master"
+you can set the git ref to deploy (can be a branch, tag or commit hash), defaults to "master":
 
     project_version: "master"
 
 When using the synchonize method, we recommend using a .rsync-filter file in the source folder,
 to exclude .git and other unneeded data to be transferred.
 
-If you use the "synchronize" strategy:
-you can set a timeout for the synchonize module
+If you use the "synchronize" strategy, you can set a timeout for the synchonize module:
 
     project_deploy_synchronize_timeout: 30
 
@@ -61,17 +62,17 @@ and you can also tell synchronize to delete files that don't exist on source:
 
     project_deploy_synchronize_delete: true  # defaults to false
 
-you must set the path to your local source (default assumes the playbook in /ansible/)
+you must set the path to your local source (default assumes the playbook in /ansible/):
 
     project_local_path: "../"
 
 
-The source_path is used to fetch the tags from git, or synchronise via rsync. This way
-you do not have to download/sync the entire project on every deploy
+The source_path is used to fetch the tags from git, or synchronise via rsync. 
+This way you do not have to download/sync the entire project on every deploy:
 
     project_source_path: "{{ project_root }}/shared/source"
 
-Files or folders to remove from the source when deploying
+Files or folders to remove from the source when deploying:
 
     project_unwanted_items: [ '.git' ]
 
@@ -83,41 +84,40 @@ If it exists, this path will be deleted before a new build is started
 
     project_build_path: "{{ project_root }}/build"
 
-The project does not assume any package manager, you can enable whichever one(s) you use.
-(only composer for the first release)
+The project does not assume any package manager, you can enable whichever one(s) you use:
 
     project_has_composer: false
     project_has_npm: false
     project_has_bower: false
 
-Default values to run composer install
+Default values to run composer install:
 
     project_composer_binary: composer.phar
     project_command_for_composer_install: "{{ project_composer_binary }} install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader --no-scripts"
 
-Default values to run npm install
+Default values to run npm install:
 
     project_npm_binary: npm
     project_command_for_npm_install: "{{ project_npm_binary }} install --production"
 
-Default values to run bower install
+Default values to run bower install:
 
     project_bower_binary: bower
     project_command_for_bower_install: "{{ project_bower_binary }} install --production --config.interactive=false"
     
-To speed up composer/npm/bower install it is possible to copy the vendor/node_modules/component directories from the previous release.
+To speed up composer/npm/bower install it is possible to copy the vendor/node_modules/component directories from the previous release:
 
     project_copy_previous_composer_vendors: true
     project_copy_previous_npm_modules: true
     project_copy_previous_bower_components: true
     
-You can also change the path of the installed vendors:
+You can also change the path of the installed vendors (relative to {{ deploy_helper.new_release_path }}):
 
-    project_composer_vendor_path: new/dir/relative/to/{{ deploy_helper.new_release_path }}/vendor
+    project_composer_vendor_path: vendor
     project_npm_modules_path: node_modules
     project_bower_components_path: components
 
-All the files to copy to the remote system on deploy. These could contain config files.
+All the files to copy to the remote system on deploy. These could contain config files:
 
     project_files: []
 
@@ -132,12 +132,12 @@ All the files to copy to the remote system on deploy. These could contain config
         dest: "remote-path-to-other-file"
 
 All the templates to copy to the remote system on deploy. These could contain config files.
-Works the same as the project_files
+Works the same as the project_files:
 
     project_templates: []
 
 The shared_children is a list of all files/folders in your project that need to be linked to someplace outside
-the release. For example a logging directory or an uploads folder. These live in "/shared"
+the release. For example a logging directory or an uploads folder. These live in "/shared":
 
     project_shared_children: []
 
@@ -150,7 +150,7 @@ the release. For example a logging directory or an uploads folder. These live in
         src: "uploads"
 
 
-The project_environment is a list of environment variables added to the various *_commands
+The project_environment is a list of environment variables added to the various *_commands:
 
     project_environment: {}
 
@@ -159,9 +159,8 @@ The project_environment is a list of environment variables added to the various 
     project_environment:
       SYMFONY_ENV: "prod"
 
-
 There are a few moments in this role where arbitrary command(s) can be run. These commands receive
-the "project_environment" so deploys for different stages can be done by changing this.
+the "project_environment" so deploys for different stages can be done by changing this:
 
     project_pre_build_commands: []
     project_post_build_commands: []
@@ -175,7 +174,7 @@ the "project_environment" so deploys for different stages can be done by changin
       - "app/console assetic:dump"
 
 At the end of the role, the "current" symlink is set to the release. If you need to perform
-your own actions before this happens, set "project_finalize" to false.
+your own actions before this happens, set "project_finalize" to false:
 
      project_finalize: true
 
@@ -218,8 +217,8 @@ the remote user to be able to clone the project (with SSH keys for example).
       roles:
          - f500.project_deploy
 
-You can also use the deploy module included with the role to clean up old releases: 
-(this is done on finalize by default)
+You can also use the deploy module included with the role to clean up old releases
+(this is done on finalize by default):
 
       post_tasks:
         - name: Remove old releases

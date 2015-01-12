@@ -53,6 +53,9 @@ project_npm_binary: npm
 project_command_for_npm_install: "{{ project_npm_binary }} install --production"
 # When set to true the old modules dir is copied to the new release to speed up npm install
 project_copy_previous_npm_modules: false
+# This *looks* like a setting, but in fact it's not:
+# https://docs.npmjs.com/misc/faq#-node_modules-is-the-name-of-my-deity-s-arch-rival-and-a-forbidden-word-in-my-religion-can-i-configure-npm-to-use-a-different-folder-
+# (preemtively added in case pigs ever learn to fly)
 project_npm_modules_path: node_modules
 
 # Default values to run bower install
