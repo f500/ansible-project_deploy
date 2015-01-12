@@ -44,14 +44,23 @@ project_has_bower: false
 # Default values to run composer install
 project_composer_binary: composer.phar
 project_command_for_composer_install: "{{ project_composer_binary }} install --no-ansi --no-dev --no-interaction --no-progress --optimize-autoloader --no-scripts"
+# When set to true the old vendor dir is copied to the new release to speed up composer install
+project_copy_previous_composer_vendors: false
+project_composer_vendor_path: vendor
 
 # Default values to run npm install
 project_npm_binary: npm
 project_command_for_npm_install: "{{ project_npm_binary }} install --production"
+# When set to true the old modules dir is copied to the new release to speed up npm install
+project_copy_previous_npm_modules: false
+project_npm_modules_path: node_modules
 
 # Default values to run bower install
 project_bower_binary: bower
 project_command_for_bower_install: "{{ project_bower_binary }} install --production --config.interactive=false"
+# When set to true the old components dir is copied to the new release to speed up bower install
+project_copy_previous_bower_components: false
+project_bower_components_path: components
 
 # All the files to copy to the remote system on deploy. These could contain config files.
 # Example:
