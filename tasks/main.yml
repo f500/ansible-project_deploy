@@ -4,6 +4,7 @@
   deploy_helper: "path={{ project_root }} state=present"
 
 - name: Clone project files
+  sudo: {{ project_git_sudo }}
   git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
   when: project_deploy_strategy == 'git'
 

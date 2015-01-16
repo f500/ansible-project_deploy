@@ -10,6 +10,9 @@
 # project_git_repo: "git_repository"
 # - you can set the git ref to deploy (can be a branch, tag or commit hash)
 project_version: "master"
+# - you can optionally use "sudo" to connect to git, if absolutely necessary;
+#   see https://help.github.com/articles/error-permission-denied-publickey/
+project_git_sudo: false
 
 # DEPRECATED
 # For git, the .git folder is automatically removed
