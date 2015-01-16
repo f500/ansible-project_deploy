@@ -3,6 +3,14 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog for this fork
+
+Pull request will be sent to original project maintainer: 
+
+- added "project_git_sudo" to connect to git with or without out *sudo* (defaults to false); see [GitHub Help](https://help.github.com/articles/error-permission-denied-publickey/) about this
+
+
+
 ### Changelog 2.1.0
 - added option to copy Composer, NPM and Bower folders from previous release
 
@@ -51,8 +59,15 @@ you can set the git ref to deploy (can be a branch, tag or commit hash), default
 
     project_version: "master"
 
+you can optionally use "sudo" mode to connect to git, if absolutely necessary:
+
+    project_git_sudo: true  # defaults to false
+
 When using the synchonize method, we recommend using a .rsync-filter file in the source folder,
 to exclude .git and other unneeded data to be transferred.
+
+
+
 
 If you use the "synchronize" strategy, you can set a timeout for the synchonize module:
 

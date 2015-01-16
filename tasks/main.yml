@@ -3,9 +3,15 @@
 - name: Initialize
   deploy_helper: "path={{ project_root }} state=present"
 
-- name: Clone project files
+- name: Clone project files without sudo
+  sudo: false
   git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
-  when: project_deploy_strategy == 'git'
+  when: project_deploy_strategy == 'git' and {{ project_git_sudo }} == false
+
+- name: Clone project files *with sudo*
+  sudo: true
+  git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
+  when: project_deploy_strategy == 'git' and {{ project_git_sudo }} == true
 
 - name: Rsync project files
   synchronize: "src={{ project_local_path }} dest={{ project_source_path }} rsync_timeout={{ project_deploy_synchronize_timeout }} delete={{ project_deploy_synchronize_delete }} recursive=yes "
