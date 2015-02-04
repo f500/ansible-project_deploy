@@ -32,6 +32,8 @@ project_s3_bucket: 'my-bucket'
 project_s3_path: '/my-app/'
 # - file to get
 project_s3_filename: my-app-master.war
+# - final filename to write (usefull for tomcat/wars)
+# project_final_filename: my-app.war
 
 # The source_path is used to fetch the tags from git, or synchronise via rsync. This way
 # you do not have to download/sync the entire project on every deploy
