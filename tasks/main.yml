@@ -12,7 +12,7 @@
   when: project_deploy_strategy == 'synchronize'
 
 - name: s3 download project files
-  s3: "bucket={{ project_s3_bucket }} mode=get object='{{ project_s3_path }}/{{ project_s3_filename }}' dest='{{ project_source_path }}/{{ project_s3_filename }}' aws_access_key={{ aws_access_key }} aws_secret_key={{ aws_secret_key }} region={{ project_s3_region }}"
+  s3: "bucket={{ project_s3_bucket }} mode=get object='{{ project_s3_path }}/{{ project_s3_filename }}' dest='{{ project_source_path }}/{{ project_final_filename|default(project_s3_filename) }}' aws_access_key={{ aws_access_key }} aws_secret_key={{ aws_secret_key }} region={{ project_s3_region }}"
   when: project_deploy_strategy == 's3'
 
 - name: write unfinished file
