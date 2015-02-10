@@ -41,7 +41,7 @@ Role Variables
 These variables must be set, they have no defaults:
 
     project_root: "path_to_project_on_the_target_machine"
-    project_deploy_strategy: "git" or "synchronize"
+    project_deploy_strategy: "git", "synchronize" or "s3"
 
 If you use the "git" strategy, you must also set a repository:
 
@@ -66,8 +66,19 @@ you must set the path to your local source (default assumes the playbook in /ans
 
     project_local_path: "../"
 
+If you use the "s3" strategy, you have to install python-boto on the target host and set AWS credentials
+  aws_access_key: 'ACCESS_KEY'
+  aws_secret_key: 'SECRET_KEY'
 
-The source_path is used to fetch the tags from git, or synchronise via rsync. 
+You also have to set s3 parameters, region, bucket, path and filename:
+
+    project_s3_region: 'eu-west-1'
+    project_s3_bucket: 'my-bucket'
+    project_s3_path: '/my-app/'
+    project_s3_filename: my-app-master.war
+
+
+The source_path is used to fetch the tags from git, or synchronise via rsync.
 This way you do not have to download/sync the entire project on every deploy:
 
     project_source_path: "{{ project_root }}/shared/source"
@@ -104,13 +115,13 @@ Default values to run bower install:
 
     project_bower_binary: bower
     project_command_for_bower_install: "{{ project_bower_binary }} install --production --config.interactive=false"
-    
+
 To speed up composer/npm/bower install it is possible to copy the vendor/node_modules/component directories from the previous release:
 
     project_copy_previous_composer_vendors: true
     project_copy_previous_npm_modules: true
     project_copy_previous_bower_components: true
-    
+
 You can also change the path of the installed vendors (relative to {{ deploy_helper.new_release_path }}):
 
     project_composer_vendor_path: vendor
