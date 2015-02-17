@@ -1,7 +1,7 @@
 ---
 
 - name: Initialize
-  deploy_helper: "path={{ project_root }} state=present shared_path={{ project_shared_path|default(omit) }}"
+  deploy_helper: "path={{ project_root }} state=present shared_path={{ project_shared_path|default(project_shared_path) }}"
 
 - name: Clone project files
   git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
