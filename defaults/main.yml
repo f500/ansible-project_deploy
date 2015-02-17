@@ -39,6 +39,11 @@ project_s3_filename: my-app-master.war
 # you do not have to download/sync the entire project on every deploy
 project_source_path: "{{ project_root }}/shared/source"
 
+# The source_shared_path is used to set the path for your shared assets. 
+# Example:
+# project_shared_path: "/var/shared"
+project_shared_path: "{{ project_root }}/shared"
+
 # Files or folders to remove from the source when deploying
 project_unwanted_items: [ '.git' ]
 
@@ -92,7 +97,7 @@ project_files: []
 # Works the same as the project_files
 project_templates: []
 
-# The shared_children is a list of all files/folders in your project that need to be linked to a path in "/shared".
+# The shared_children is a list of all files/folders in your project that need to be linked to a path in "{{ project_shared_path }}.
 # For example a sessions directory or an uploads folder.. They are created if they don't exist, with the type
 # specified in the "type" key (file or directory).
 # Example:
