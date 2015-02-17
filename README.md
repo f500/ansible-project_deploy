@@ -156,7 +156,7 @@ Works the same as the project_files:
     project_templates: []
 
 The shared_children is a list of all files/folders in your project that need to be linked to someplace outside
-the release. For example a logging directory or an uploads folder. These live in "{{ project_root }}/shared":
+the release. For example a logging directory or an uploads folder. These live in "{{ project_shared_path }}":
 
     project_shared_children: []
 
