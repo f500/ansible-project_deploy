@@ -128,6 +128,14 @@ You can also change the path of the installed vendors (relative to {{ deploy_hel
     project_npm_modules_path: node_modules
     project_bower_components_path: components
 
+
+The project_shared_path is used to set the path for your shared assets. 
+Required: No
+Default: "{{ project_root }}/shared"
+
+    project_shared_path: "/var/data/example"
+
+
 All the files to copy to the remote system on deploy. These could contain config files:
 
     project_files: []
@@ -148,7 +156,7 @@ Works the same as the project_files:
     project_templates: []
 
 The shared_children is a list of all files/folders in your project that need to be linked to someplace outside
-the release. For example a logging directory or an uploads folder. These live in "/shared":
+the release. For example a logging directory or an uploads folder. These live in "{{ project_shared_path }}":
 
     project_shared_children: []
 
