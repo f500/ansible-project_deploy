@@ -3,6 +3,9 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 2.2.0
+- added hooks. This feature allows for inclusion of arbitrary tasks at certain points in the process.
+
 ### Changelog 2.1.0
 - added option to copy Composer, NPM and Bower folders from previous release
 
@@ -43,6 +46,20 @@ These variables must be set, they have no defaults:
     project_root: "path_to_project_on_the_target_machine"
     project_deploy_strategy: "git", "synchronize" or "s3"
 
+At certain key points in the role an option exists to include a task file of your own.
+In order to use this option, create a tasks file and set the corresponding hook variable to its location:
+ 
+    project_deploy_hook_on_initialize
+    project_deploy_hook_on_update_source
+    project_deploy_hook_on_create_build_dir
+    project_deploy_hook_on_perform_build
+    project_deploy_hook_on_make_shared_resources
+    project_deploy_hook_on_finalize
+
+**Example:**
+
+    project_deploy_hook_on_perform_build: {{ playbook_dir }}/deploy_hooks/perform-build.yml
+    
 If you use the "git" strategy, you must also set a repository:
 
     project_git_repo: "git_repository"
@@ -178,6 +195,8 @@ The project_environment is a list of environment variables added to the various 
     project_environment:
       SYMFONY_ENV: "prod"
 
+
+**DEPRECATED, PLEASE USE HOOKS**
 There are a few moments in this role where arbitrary command(s) can be run. These commands receive
 the "project_environment" so deploys for different stages can be done by changing this:
 
