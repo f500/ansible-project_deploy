@@ -58,7 +58,7 @@ In order to use this option, create a tasks file and set the corresponding hook 
 
 **Example:**
 
-    project_deploy_hook_on_perform_build: {{ playbook_dir }}/deploy_hooks/perform-build.yml
+    project_deploy_hook_on_perform_build: "{{ playbook_dir }}/deploy_hooks/perform-build.yml"
     
 If you use the "git" strategy, you must also set a repository:
 
