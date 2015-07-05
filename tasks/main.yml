@@ -1,7 +1,14 @@
 ---
 
+### Initialize
+- include: "{{ project_deploy_hook_on_initialize | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+
 - name: Initialize
   deploy_helper: "path={{ project_root }} state=present shared_path={{ project_shared_path }}"
+
+
+### Update source
+- include: "{{ project_deploy_hook_on_update_source | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
 
 - name: Clone project files
   git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
@@ -18,6 +25,10 @@
 - name: write unfinished file
   file: "path={{ project_source_path }}/{{ deploy_helper.unfinished_filename }} state=touch"
 
+
+### Create build dir
+- include: "{{ project_deploy_hook_on_create_build_dir | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+
 - name: Copy files to new build dir
   command: "cp -pr {{ project_source_path }} {{ deploy_helper.new_release_path }}"
 
@@ -32,6 +43,10 @@
 - name: Copy project templates
   template: src={{ item.src }} dest={{ deploy_helper.new_release_path }}/{{ item.dest }} mode={{ item.mode|default('0644') }}
   with_items: project_templates
+
+
+### Perform build
+- include: "{{ project_deploy_hook_on_perform_build | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
 
 - name: Run pre_build_commands in the new_release_path
   command: "{{ item }} chdir={{ deploy_helper.new_release_path }}"
@@ -80,6 +95,10 @@
   environment: project_environment
   when: project_has_bower
 
+
+### Make shared resources
+- include: "{{ project_deploy_hook_on_make_shared_resources | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+
 - name: Ensure shared sources are present
   file: "path='{{ deploy_helper.shared_path }}/{{ item.src }}' state={{ item.type|default('directory') }}"
   with_items: project_shared_children
@@ -91,6 +110,10 @@
 - name: Create shared symlinks
   file: "path='{{ deploy_helper.new_release_path }}/{{ item.path }}' src='{{ deploy_helper.shared_path }}/{{ item.src }}' state=link"
   with_items: project_shared_children
+
+
+### Finalize
+- include: "{{ project_deploy_hook_on_finalize | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
 
 - name: Run post_build_commands in the new_release_path
   command: "{{ item }} chdir={{ deploy_helper.new_release_path }}"
