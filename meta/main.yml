@@ -5,10 +5,6 @@ galaxy_info:
   company: Future500
   license: LGPL
   min_ansible_version: 1.4
-  platforms:
-  - name: Debian
-    versions:
-      - wheezy
   categories:
     - web
   platforms:
