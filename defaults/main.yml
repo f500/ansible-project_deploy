@@ -1,9 +1,8 @@
 ---
 
-# These variables must be set
+# These variables must be set, they have no defaults:
 # project_root: "path_to_project_on_the_target_machine"
 # project_deploy_strategy: "git" or "synchronize"
-
 
 # If you use the "git" strategy:
 # - you must set a repository (no default)
@@ -115,6 +114,19 @@ project_shared_children: []
 #   SYMFONY_ENV: "prod"
 project_environment: {}
 
+# HOOKS
+# At certain key points in the role an option exists to include a task file of your own:
+# project_deploy_hook_on_initialize
+# project_deploy_hook_on_update_source
+# project_deploy_hook_on_create_build_dir
+# project_deploy_hook_on_perform_build
+# project_deploy_hook_on_make_shared_resources
+# project_deploy_hook_on_finalize
+#
+# Example:
+# project_deploy_hook_on_perform_build: "{{ playbook_dir }}/deploy_hooks/perform-build.yml"
+
+# DEPRECATED, PLEASE USE HOOKS
 # There are a few moments in this role where arbitrary command(s) can be run. These commands receive
 # the "project_environment" so deploys for different stages can be done by changing this .
 # Example:
