@@ -51,7 +51,7 @@
 - name: Run pre_build_commands in the new_release_path
   command: "{{ item }} chdir={{ deploy_helper.new_release_path }}"
   with_items: project_pre_build_commands
-  environment: project_environment
+  environment: "{{ project_environment }}"
 
 - name: Check if vendor dir exists
   stat: path={{ deploy_helper.current_path }}/{{ project_composer_vendor_path }}
@@ -64,7 +64,7 @@
 
 - name: Do composer install
   command: "{{ project_command_for_composer_install }} chdir={{ deploy_helper.new_release_path }}"
-  environment: project_environment
+  environment: "{{ project_environment }}"
   when: project_has_composer
 
 - name: Check if npm dir exists
@@ -78,7 +78,7 @@
 
 - name: Do npm install
   command: "{{ project_command_for_npm_install }} chdir={{ deploy_helper.new_release_path }}"
-  environment: project_environment
+  environment: "{{ project_environment }}"
   when: project_has_npm
 
 - name: Check if bower dir exists
@@ -92,7 +92,7 @@
 
 - name: Do bower install
   command: "{{ project_command_for_bower_install }} chdir={{ deploy_helper.new_release_path }}"
-  environment: project_environment
+  environment: "{{ project_environment }}"
   when: project_has_bower
 
 
@@ -118,7 +118,7 @@
 - name: Run post_build_commands in the new_release_path
   command: "{{ item }} chdir={{ deploy_helper.new_release_path }}"
   with_items: project_post_build_commands
-  environment: project_environment
+  environment: "{{ project_environment }}"
 
 - name: Finalize the deploy
   deploy_helper: path={{ project_root }} release={{ deploy_helper.new_release }} state=finalize
