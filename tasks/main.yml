@@ -1,14 +1,18 @@
 ---
 
 ### Initialize
-- include: "{{ project_deploy_hook_on_initialize | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+- name: Include initialize hook 
+  include: "{{ project_deploy_hook_on_initialize }}"
+  when: project_deploy_hook_on_initialize is defined
 
 - name: Initialize
   deploy_helper: "path={{ project_root }} state=present shared_path={{ project_shared_path }}"
 
 
 ### Update source
-- include: "{{ project_deploy_hook_on_update_source | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+- name: Include update_source hook
+  include: "{{ project_deploy_hook_on_update_source }}"
+  when: project_deploy_hook_on_update_source is defined
 
 - name: Clone project files
   git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
@@ -27,7 +31,9 @@
 
 
 ### Create build dir
-- include: "{{ project_deploy_hook_on_create_build_dir | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+- name: Include create_build_dir hook
+  include: "{{ project_deploy_hook_on_create_build_dir }}"
+  when: project_deploy_hook_on_create_build_dir is defined
 
 - name: Copy files to new build dir
   command: "cp -pr {{ project_source_path }} {{ deploy_helper.new_release_path }}"
@@ -46,7 +52,9 @@
 
 
 ### Perform build
-- include: "{{ project_deploy_hook_on_perform_build | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+- name: Include perform_build hook
+  include: "{{ project_deploy_hook_on_perform_build }}"
+  when: project_deploy_hook_on_perform_build is defined
 
 - name: Run pre_build_commands in the new_release_path
   command: "{{ item }} chdir={{ deploy_helper.new_release_path }}"
@@ -97,7 +105,9 @@
 
 
 ### Make shared resources
-- include: "{{ project_deploy_hook_on_make_shared_resources | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+- name: Include make_shared_resources hook
+  include: "{{ project_deploy_hook_on_make_shared_resources }}"
+  when: project_deploy_hook_on_make_shared_resources is defined
 
 - name: Ensure shared sources are present
   file: "path='{{ deploy_helper.shared_path }}/{{ item.src }}' state={{ item.type|default('directory') }}"
@@ -113,7 +123,9 @@
 
 
 ### Finalize
-- include: "{{ project_deploy_hook_on_finalize | default(lookup('pipe', 'pwd') ~ '/hooks/example.yml') }}"
+- name: Include finalize hook
+  include: "{{ project_deploy_hook_on_finalize }}"
+  when: project_deploy_hook_on_finalize is defined
 
 - name: Run post_build_commands in the new_release_path
   command: "{{ item }} chdir={{ deploy_helper.new_release_path }}"
