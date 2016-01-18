@@ -3,6 +3,9 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 3.0.0  BC BREAK. Set your galaxy version to v2.2.2 for Ansible 1.9 or less.
+- Ansible V2 compatibility: Changed the hook mechanism. This is a breaking change with regards to Ansible v1.9, so until you upgrade to Ansible 2.0 you should lock the version of this role to "v2.2.2". 
+
 ### Changelog 2.2.0
 - added hooks. This feature allows for inclusion of arbitrary tasks at certain points in the process.
 
