@@ -5,7 +5,7 @@ galaxy_info:
   company: Future500
   license: LGPL
   min_ansible_version: 1.4
-  categories:
+  galaxy_tags:
     - web
   platforms:
     - name: GenericUNIX
