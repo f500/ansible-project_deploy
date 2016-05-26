@@ -3,6 +3,10 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 3.1.1
+
+- Removed dependency on Ansible role `F500.project_deploy_module` (it is an Ansible Modules Extra module now)
+
 ### Changelog 3.1.0
 
 - added option to set the release name explicitly. This allows for having the same release across all nodes.
@@ -251,7 +255,7 @@ Dependencies
 
 Before v2.0.0 : none
 After v2.0.0 : f500.project_deploy_module
-
+After v3.1.1 : none
 
 Example Playbook
 -------------------------

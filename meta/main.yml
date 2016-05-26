@@ -35,4 +35,4 @@ galaxy_info:
     - name: Debian
       versions:
         - all
-dependencies: ['f500.project_deploy_module']
+dependencies: []
