@@ -6,8 +6,7 @@
   when: project_deploy_hook_on_initialize is defined
 
 - name: Initialize
-  deploy_helper: "path={{ project_root }} state=present shared_path={{ project_shared_path }}"
-
+  deploy_helper: "path={{ project_root }} release={{ project_release|default(omit) }} state=present shared_path={{ project_shared_path }}"
 
 ### Update source
 - name: Include update_source hook

@@ -3,16 +3,24 @@ project_deploy
 
 Deploy a project with Ansible
 
-### Changelog 3.0.0  BC BREAK. Set your galaxy version to v2.2.2 for Ansible 1.9 or less.
-- Ansible V2 compatibility: Changed the hook mechanism. This is a breaking change with regards to Ansible v1.9, so until you upgrade to Ansible 2.0 you should lock the version of this role to "v2.2.2". 
+### Changelog 3.1.0
+
+- added option to set the release name explicitly. This allows for having the same release across all nodes.
+
+### Changelog 3.0.0 BC BREAK. Set your galaxy version to v2.2.2 for Ansible 1.9 or less.
+
+- Ansible V2 compatibility: Changed the hook mechanism. This is a breaking change with regards to Ansible v1.9, so until you upgrade to Ansible 2.0 you should lock the version of this role to "v2.2.2".
 
 ### Changelog 2.2.0
+
 - added hooks. This feature allows for inclusion of arbitrary tasks at certain points in the process.
 
 ### Changelog 2.1.0
+
 - added option to copy Composer, NPM and Bower folders from previous release
 
 ### Changelog 2.0.0  BC BREAK. Set your galaxy version to v1.0.0 for the old deploy module.
+
 - remove the deploy module (it has been added to a separate module in f500.project_deploy_module)
 - module renamed to deploy_helper
 
@@ -48,6 +56,12 @@ These variables must be set, they have no defaults:
 
     project_root: "path_to_project_on_the_target_machine"
     project_deploy_strategy: "git", "synchronize" or "s3"
+
+This variable allows for setting your own release name instead of the generated timestamp.
+When deploying to multiple nodes, setting this will keep the same release name between all nodes,
+simplifying automated rollbacks (you can use the `set_fact` module to create unique name at runtime).
+
+    project_release: "v3.12.6"
 
 At certain key points in the role an option exists to include a task file of your own.
 In order to use this option, create a tasks file and set the corresponding hook variable to its location:
@@ -87,8 +101,9 @@ you must set the path to your local source (default assumes the playbook in /ans
     project_local_path: "../"
 
 If you use the "s3" strategy, you have to install python-boto on the target host and set AWS credentials
-  aws_access_key: 'ACCESS_KEY'
-  aws_secret_key: 'SECRET_KEY'
+
+    aws_access_key: 'ACCESS_KEY'
+    aws_secret_key: 'SECRET_KEY'
 
 You also have to set s3 parameters, region, bucket, path and filename:
 
@@ -96,7 +111,6 @@ You also have to set s3 parameters, region, bucket, path and filename:
     project_s3_bucket: 'my-bucket'
     project_s3_path: '/my-app/'
     project_s3_filename: my-app-master.war
-
 
 The source_path is used to fetch the tags from git, or synchronise via rsync.
 This way you do not have to download/sync the entire project on every deploy:

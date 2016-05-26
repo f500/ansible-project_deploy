@@ -1,8 +1,16 @@
 ---
 
+# This is the name of the folder for the new build. If this variable
+# is not set, a timestamp YYYYMMDDHHIISS will be generated autmatically.
+#
+# project_release:
+#
+# !Imporant: If you deploy to multiple targets, the timestamp will be
+#            different for each one. Use this variable to prevent that.
+
 # These variables must be set, they have no defaults:
 # project_root: "path_to_project_on_the_target_machine"
-# project_deploy_strategy: "git" or "synchronize"
+# project_deploy_strategy: "git", "synchronize" or "s3"
 
 # If you use the "git" strategy:
 # - you must set a repository (no default)
