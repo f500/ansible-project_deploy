@@ -132,5 +132,5 @@
   environment: "{{ project_environment }}"
 
 - name: Finalize the deploy
-  deploy_helper: path={{ project_root }} release={{ deploy_helper.new_release }} state=finalize
+  deploy_helper: path={{ project_root }} release={{ deploy_helper.new_release }} state=finalize clean={{ project_clean|bool }} keep_releases={{ project_keep_releases|int }}
   when: "{{ project_finalize }}"

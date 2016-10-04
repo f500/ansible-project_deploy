@@ -3,6 +3,10 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 3.2.0
+
+- added the variables "project_clean" and "project_keep_releases".
+
 ### Changelog 3.1.1
 
 - Removed dependency on Ansible role `F500.project_deploy_module` (it is an Ansible Modules Extra module now)
@@ -248,6 +252,16 @@ When you're ready, perform the symlink task yourself (in post_tasks for example)
 When you're ready, finalize the deploy with the module:
 
     - deploy_helper: path={{ project_root }} release={{ deploy_helper.new_release }} state=finalize
+
+If you do want to finalize and have the role switch the "current" symlink, but
+don't want to clean up old releases, set "project_clean" to false:
+
+    project_clean: true
+
+Or if you want to keep less or more than 5 releases, set "project_keep_releases"
+to the desired number (minimum of 1):
+
+    project_keep_releases: 5
 
 
 Dependencies

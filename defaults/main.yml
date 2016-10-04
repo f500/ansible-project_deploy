@@ -152,3 +152,11 @@ project_post_build_commands: []
 # - file: path={{ deploy.new_release_path }}/{{ deploy.unfinished_filename }} state=absent
 # - file: src={{ deploy.new_release_path }} dest={{ deploy.current_path }} state=link
 project_finalize: true
+
+# When finalizing, by default old releases will be cleanud up.
+# Set "project_clean" to false if you don't want this to happen.
+project_clean: true
+
+# When finalizing, by default old releases will be cleanud up. By default 5 release will be kept.
+# Set "project_keep_releases" when you want less or more release kept. Minimal is 1.
+project_keep_releases: 5
