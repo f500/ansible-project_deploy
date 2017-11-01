@@ -2,7 +2,7 @@
 
 ### Initialize
 - name: Include initialize hook
-  include: "{{ project_deploy_hook_on_initialize }}"
+  include_tasks: "{{ project_deploy_hook_on_initialize }}"
   when: project_deploy_hook_on_initialize is defined
 
 - name: Initialize
@@ -11,7 +11,7 @@
 
 ### Update source
 - name: Include update_source hook
-  include: "{{ project_deploy_hook_on_update_source }}"
+  include_tasks: "{{ project_deploy_hook_on_update_source }}"
   when: project_deploy_hook_on_update_source is defined
 
 - name: Clone project files
@@ -32,7 +32,7 @@
 
 ### Create build dir
 - name: Include create_build_dir hook
-  include: "{{ project_deploy_hook_on_create_build_dir }}"
+  include_tasks: "{{ project_deploy_hook_on_create_build_dir }}"
   when: project_deploy_hook_on_create_build_dir is defined
 
 - name: Copy files to new build dir
@@ -53,7 +53,7 @@
 
 ### Perform build
 - name: Include perform_build hook
-  include: "{{ project_deploy_hook_on_perform_build }}"
+  include_tasks: "{{ project_deploy_hook_on_perform_build }}"
   when: project_deploy_hook_on_perform_build is defined
 
 - name: Run pre_build_commands in the new_release_path
@@ -106,7 +106,7 @@
 
 ### Make shared resources
 - name: Include make_shared_resources hook
-  include: "{{ project_deploy_hook_on_make_shared_resources }}"
+  include_tasks: "{{ project_deploy_hook_on_make_shared_resources }}"
   when: project_deploy_hook_on_make_shared_resources is defined
 
 - name: Ensure shared sources are present
@@ -128,7 +128,7 @@
 
 ### Finalize
 - name: Include finalize hook
-  include: "{{ project_deploy_hook_on_finalize }}"
+  include_tasks: "{{ project_deploy_hook_on_finalize }}"
   when: project_deploy_hook_on_finalize is defined
 
 - name: Run post_build_commands in the new_release_path
