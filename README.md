@@ -3,6 +3,10 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 4.0.0 BC BREAK. Set your galaxy version to v3.2.0 for Ansible 2.3 or less.
+
+- replaced deprecated "include" with "include_tasks".
+
 ### Changelog 3.2.0
 
 - added the variables "project_clean" and "project_keep_releases".
@@ -73,7 +77,7 @@ simplifying automated rollbacks (you can use the `set_fact` module to create uni
 
 At certain key points in the role an option exists to include a task file of your own.
 In order to use this option, create a tasks file and set the corresponding hook variable to its location:
- 
+
     project_deploy_hook_on_initialize
     project_deploy_hook_on_update_source
     project_deploy_hook_on_create_build_dir
@@ -84,7 +88,7 @@ In order to use this option, create a tasks file and set the corresponding hook 
 **Example:**
 
     project_deploy_hook_on_perform_build: "{{ playbook_dir }}/deploy_hooks/perform-build.yml"
-    
+
 If you use the "git" strategy, you must also set a repository:
 
     project_git_repo: "git_repository"
@@ -171,7 +175,7 @@ You can also change the path of the installed vendors (relative to {{ deploy_hel
     project_bower_components_path: components
 
 
-The project_shared_path is used to set the path for your shared assets. 
+The project_shared_path is used to set the path for your shared assets.
 Required: No
 Default: "{{ project_root }}/shared"
 
