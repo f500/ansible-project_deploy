@@ -36,7 +36,7 @@
   when: project_deploy_hook_on_create_build_dir is defined
 
 - name: Copy files to new build dir
-  command: "cp -pr {{ project_source_path }} {{ deploy_helper.new_release_path }}"
+  command: "cp -prT {{ project_source_path }} {{ deploy_helper.new_release_path }}"
 
 - name: Remove unwanted files/folders from new release
   file: "path={{ deploy_helper.new_release_path }}/{{ item }} state=absent"
@@ -67,7 +67,7 @@
   when: project_copy_previous_composer_vendors
 
 - name: Copy vendor dir if exists to speed up composer
-  command: /bin/cp -rp {{ deploy_helper.current_path }}/{{ project_composer_vendor_path }} {{ deploy_helper.new_release_path }}/{{ project_composer_vendor_path }}
+  command: /bin/cp -prT {{ deploy_helper.current_path }}/{{ project_composer_vendor_path }} {{ deploy_helper.new_release_path }}/{{ project_composer_vendor_path }}
   when: project_copy_previous_composer_vendors and check_composer_vendor_path.stat.exists
 
 - name: Do composer install
@@ -81,7 +81,7 @@
   when: project_copy_previous_npm_modules
 
 - name: Copy npm dir if exists to speed up npm install
-  command: /bin/cp -rp {{ deploy_helper.current_path }}/{{ project_npm_modules_path }} {{ deploy_helper.new_release_path }}/{{ project_npm_modules_path }}
+  command: /bin/cp -prT {{ deploy_helper.current_path }}/{{ project_npm_modules_path }} {{ deploy_helper.new_release_path }}/{{ project_npm_modules_path }}
   when: project_copy_previous_npm_modules and check_npm_modules_path.stat.exists
 
 - name: Do npm install
@@ -95,7 +95,7 @@
   when: project_copy_previous_bower_components
 
 - name: Copy bower dir if exists to speed up bower install
-  command: /bin/cp -rp {{ deploy_helper.current_path }}/{{ project_bower_components_path }} {{ deploy_helper.new_release_path }}/{{ project_bower_components_path }}
+  command: /bin/cp -prT {{ deploy_helper.current_path }}/{{ project_bower_components_path }} {{ deploy_helper.new_release_path }}/{{ project_bower_components_path }}
   when: project_copy_previous_bower_components and check_bower_components_path.stat.exists
 
 - name: Do bower install
