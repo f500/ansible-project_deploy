@@ -103,6 +103,20 @@
   environment: "{{ project_environment }}"
   when: project_has_bower
 
+- name: Check if yarn dir exists
+  stat: path={{ deploy_helper.current_path }}/{{ project_yarn_components_path }}
+  register: check_yarn_components_path
+  when: project_copy_previous_yarn_components
+
+- name: Copy yarn dir if exists to speed up yarn install
+  command: /bin/cp -rp {{ deploy_helper.current_path }}/{{ project_yarn_components_path }} {{ deploy_helper.new_release_path }}/{{ project_yarn_components_path }}
+  when: project_copy_previous_yarn_components and check_yarn_components_path.stat.exists
+
+- name: Do yarn install
+  command: "{{ project_command_for_yarn_install }} chdir={{ deploy_helper.new_release_path }}"
+  environment: "{{ project_environment }}"
+  when: project_has_yarn
+
 
 ### Make shared resources
 - name: Include make_shared_resources hook

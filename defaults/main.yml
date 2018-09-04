@@ -89,6 +89,13 @@ project_command_for_bower_install: "{{ project_bower_binary }} install --product
 project_copy_previous_bower_components: false
 project_bower_components_path: components
 
+# Default values to run yarn install
+project_yarn_binary: yarn
+project_command_for_yarn_install: "{{ project_yarn_binary }} install --production"
+# When set to true the old components dir is copied to the new release to speed up yarn install
+project_copy_previous_yarn_components: false
+project_yarn_components_path: node_modules
+
 # All the files to copy to the remote system on deploy. These could contain config files.
 # Example:
 # project_files:
