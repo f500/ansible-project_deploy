@@ -109,7 +109,7 @@
   when: project_copy_previous_yarn_components
 
 - name: Copy yarn dir if exists to speed up yarn install
-  command: /bin/cp -rp {{ deploy_helper.current_path }}/{{ project_yarn_components_path }} {{ deploy_helper.new_release_path }}/{{ project_yarn_components_path }}
+  command: /bin/cp -rpT {{ deploy_helper.current_path }}/{{ project_yarn_components_path }} {{ deploy_helper.new_release_path }}/{{ project_yarn_components_path }}
   when: project_copy_previous_yarn_components and check_yarn_components_path.stat.exists
 
 - name: Do yarn install
