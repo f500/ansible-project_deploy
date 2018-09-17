@@ -64,6 +64,7 @@ project_unwanted_items: [ '.git' ]
 project_has_composer: false
 project_has_npm: false
 project_has_bower: false
+project_has_yarn: false
 
 # Default values to run composer install
 project_composer_binary: composer.phar
