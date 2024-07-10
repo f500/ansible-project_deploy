@@ -89,6 +89,11 @@
   environment: "{{ project_environment }}"
   when: project_has_npm
 
+- name: Do npm build
+  command: "{{ project_npm_binary }} run build chdir={{ deploy_helper.new_release_path }}"
+  environment: "{{ project_environment }}"
+  when: project_needs_npm_build
+
 - name: Check if bower dir exists
   stat: path={{ deploy_helper.current_path }}/{{ project_bower_components_path }}
   register: check_bower_components_path

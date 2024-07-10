@@ -63,6 +63,7 @@ project_unwanted_items: [ '.git' ]
 # The project does not assume any package manager, you can enable whichever one(s) you use.
 project_has_composer: false
 project_has_npm: false
+project_needs_npm_build: false
 project_has_bower: false
 project_has_yarn: false
 
