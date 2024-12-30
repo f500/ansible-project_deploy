@@ -2,16 +2,17 @@
 galaxy_info:
   author: "Jasper N. Brouwer, Ramon de la Fuente"
   role_name: project_deploy
+  namespace: "f500"
   description: Deploy software projects (Capistrano-like)
   company: Future500
   license: LGPL
-  min_ansible_version: 2.4
+  min_ansible_version: "2.4"
   galaxy_tags:
     - web
   platforms:
     - name: GenericUNIX
       versions:
-        - any
+        - all
     - name: Fedora
       versions:
         - all
@@ -20,7 +21,7 @@ galaxy_info:
         - all
     - name: GenericBSD
       versions:
-        - any
+        - all
     - name: FreeBSD
       versions:
         - all
@@ -32,7 +33,7 @@ galaxy_info:
         - all
     - name: GenericLinux
       versions:
-        - any
+        - all
     - name: Debian
       versions:
         - all

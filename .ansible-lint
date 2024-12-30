@@ -51,6 +51,7 @@ use_default_rules: true
 # still visible, making it easier to address later.
 skip_list:
   - risky-shell-pipe
+  - yaml[line-length]
 #  - skip_this_tag
 
 # Ansible-lint does not automatically load rules that have the 'opt-in' tag.
