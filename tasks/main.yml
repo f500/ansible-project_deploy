@@ -1,160 +1,237 @@
 ---
-
 ### Initialize
 - name: Include initialize hook
-  include_tasks: "{{ project_deploy_hook_on_initialize }}"
+  ansible.builtin.include_tasks: "{{ project_deploy_hook_on_initialize }}"
   when: project_deploy_hook_on_initialize is defined
 
 - name: Initialize
-  deploy_helper: "path={{ project_root }} release={{ project_release|default(omit) }} state=present shared_path={{ project_shared_path }}"
-
+  community.general.deploy_helper:
+    path: "{{ project_root }}"
+    release: "{{ project_release | default(omit) }}"
+    state: present
+    shared_path: "{{ project_shared_path }}"
 
 ### Update source
 - name: Include update_source hook
-  include_tasks: "{{ project_deploy_hook_on_update_source }}"
+  ansible.builtin.include_tasks: "{{ project_deploy_hook_on_update_source }}"
   when: project_deploy_hook_on_update_source is defined
 
 - name: Clone project files
-  git: "repo={{ project_git_repo }} dest={{ project_source_path }} version={{ project_version }}"
+  ansible.builtin.git:
+    repo: "{{ project_git_repo }}"
+    dest: "{{ project_source_path }}"
+    version: "{{ project_version }}"
   when: project_deploy_strategy == 'git'
 
 - name: Rsync project files
-  synchronize: "src={{ project_local_path }} dest={{ project_source_path }} rsync_timeout={{ project_deploy_synchronize_timeout }} delete={{ project_deploy_synchronize_delete }} recursive=yes "
+  ansible.posix.synchronize:
+    src: "{{ project_local_path }}"
+    dest: "{{ project_source_path }}"
+    rsync_timeout: "{{ project_deploy_synchronize_timeout }}"
+    delete: "{{ project_deploy_synchronize_delete }}"
+    recursive: true
   when: project_deploy_strategy == 'synchronize'
 
-- name: s3 download project files
-  aws_s3: "bucket={{ project_s3_bucket }} mode=get object='{{ project_s3_path }}/{{ project_s3_filename }}' dest='{{ project_source_path }}/{{ project_final_filename|default(project_s3_filename) }}' aws_access_key={{ aws_access_key }} aws_secret_key={{ aws_secret_key }} region={{ project_s3_region }}"
+- name: S3 download project files
+  amazon.aws.aws_s3:
+    bucket: "{{ project_s3_bucket }}"
+    mode: get
+    object: "{{ project_s3_path }}/{{ project_s3_filename }}"
+    dest: "{{ project_source_path }}/{{ project_final_filename | default(project_s3_filename) }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    region: "{{ project_s3_region }}"
   when: project_deploy_strategy == 's3'
 
-- name: write unfinished file
-  file: "path={{ project_source_path }}/{{ deploy_helper.unfinished_filename }} state=touch"
+- name: Write unfinished file
+  ansible.builtin.file:
+    path: "{{ project_source_path }}/{{ deploy_helper.unfinished_filename }}"
+    state: touch
+    mode: "0644"
 
-
-### Create build dir
 - name: Include create_build_dir hook
-  include_tasks: "{{ project_deploy_hook_on_create_build_dir }}"
+  ansible.builtin.include_tasks: "{{ project_deploy_hook_on_create_build_dir }}"
   when: project_deploy_hook_on_create_build_dir is defined
 
 - name: Copy files to new build dir
-  command: "cp -prT {{ project_source_path }} {{ deploy_helper.new_release_path }}"
+  ansible.builtin.command: "cp -prT {{ project_source_path }} {{ deploy_helper.new_release_path }}"
+  changed_when: false
 
 - name: Remove unwanted files/folders from new release
-  file: "path={{ deploy_helper.new_release_path }}/{{ item }} state=absent"
+  ansible.builtin.file:
+    path: "{{ deploy_helper.new_release_path }}/{{ item }}"
+    state: absent
   with_items: "{{ project_unwanted_items }}"
 
 - name: Copy project files
-  copy: src={{ item.src }} dest={{ deploy_helper.new_release_path }}/{{ item.dest }} mode={{ item.mode|default('0644') }}
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ deploy_helper.new_release_path }}/{{ item.dest }}"
+    mode: "{{ item.mode | default('0644') }}"
   with_items: "{{ project_files }}"
 
 - name: Copy project templates
-  template: src={{ item.src }} dest={{ deploy_helper.new_release_path }}/{{ item.dest }} mode={{ item.mode|default('0644') }}
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ deploy_helper.new_release_path }}/{{ item.dest }}"
+    mode: "{{ item.mode | default('0644') }}"
   with_items: "{{ project_templates }}"
-
 
 ### Perform build
 - name: Include perform_build hook
-  include_tasks: "{{ project_deploy_hook_on_perform_build }}"
+  ansible.builtin.include_tasks: "{{ project_deploy_hook_on_perform_build }}"
   when: project_deploy_hook_on_perform_build is defined
 
 - name: Run pre_build_commands in the new_release_path
-  command: "{{ item }} chdir={{ deploy_helper.new_release_path }}"
+  ansible.builtin.command:
+    cmd: "{{ item }}"
+    chdir: "{{ deploy_helper.new_release_path }}"
   with_items: "{{ project_pre_build_commands }}"
   environment: "{{ project_environment }}"
+  changed_when: false
 
 - name: Check if vendor dir exists
-  stat: path={{ deploy_helper.current_path }}/{{ project_composer_vendor_path }}
+  ansible.builtin.stat:
+    path: "{{ deploy_helper.current_path }}/{{ project_composer_vendor_path }}"
   register: check_composer_vendor_path
   when: project_copy_previous_composer_vendors
 
 - name: Copy vendor dir if exists to speed up composer
-  command: /bin/cp -prT {{ deploy_helper.current_path }}/{{ project_composer_vendor_path }} {{ deploy_helper.new_release_path }}/{{ project_composer_vendor_path }}
+  ansible.builtin.command:
+    cmd: "/bin/cp -prT {{ deploy_helper.current_path }}/{{ project_composer_vendor_path }} {{ deploy_helper.new_release_path }}/{{
+      project_composer_vendor_path }}"
   when: project_copy_previous_composer_vendors and check_composer_vendor_path.stat.exists
+  changed_when: false
 
 - name: Do composer install
-  command: "{{ project_command_for_composer_install }} chdir={{ deploy_helper.new_release_path }}"
+  ansible.builtin.command:
+    chdir: "{{ deploy_helper.new_release_path }}"
+    cmd: "{{ project_command_for_composer_install }}"
   environment: "{{ project_environment }}"
   when: project_has_composer
+  changed_when: false
 
 - name: Check if npm dir exists
-  stat: path={{ deploy_helper.current_path }}/{{ project_npm_modules_path }}
+  ansible.builtin.stat:
+    path: "{{ deploy_helper.current_path }}/{{ project_npm_modules_path }}"
   register: check_npm_modules_path
   when: project_copy_previous_npm_modules
 
 - name: Copy npm dir if exists to speed up npm install
-  command: /bin/cp -prT {{ deploy_helper.current_path }}/{{ project_npm_modules_path }} {{ deploy_helper.new_release_path }}/{{ project_npm_modules_path }}
+  ansible.builtin.command:
+    cmd: "/bin/cp -prT {{ deploy_helper.current_path }}/{{ project_npm_modules_path }} {{ deploy_helper.new_release_path }}/{{
+      project_npm_modules_path }}"
   when: project_copy_previous_npm_modules and check_npm_modules_path.stat.exists
+  changed_when: false
 
 - name: Do npm install
-  command: "{{ project_command_for_npm_install }} chdir={{ deploy_helper.new_release_path }}"
+  ansible.builtin.command:
+    chdir: "{{ deploy_helper.new_release_path }}"
+    cmd: "{{ project_command_for_npm_install }}"
   environment: "{{ project_environment }}"
   when: project_has_npm
+  changed_when: false
 
 - name: Do npm build
-  command: "{{ project_npm_binary }} run build chdir={{ deploy_helper.new_release_path }}"
+  ansible.builtin.command:
+    chdir: "{{ deploy_helper.new_release_path }}"
+    cmd: "{{ project_npm_binary }} run build"
   environment: "{{ project_environment }}"
   when: project_needs_npm_build
+  changed_when: false
 
 - name: Check if bower dir exists
-  stat: path={{ deploy_helper.current_path }}/{{ project_bower_components_path }}
+  ansible.builtin.stat:
+    path: "{{ deploy_helper.current_path }}/{{ project_bower_components_path }}"
   register: check_bower_components_path
   when: project_copy_previous_bower_components
 
 - name: Copy bower dir if exists to speed up bower install
-  command: /bin/cp -prT {{ deploy_helper.current_path }}/{{ project_bower_components_path }} {{ deploy_helper.new_release_path }}/{{ project_bower_components_path }}
+  ansible.builtin.command:
+    cmd: "/bin/cp -prT {{ deploy_helper.current_path }}/{{ project_bower_components_path }} {{ deploy_helper.new_release_path
+      }}/{{ project_bower_components_path }}"
   when: project_copy_previous_bower_components and check_bower_components_path.stat.exists
+  changed_when: false
 
 - name: Do bower install
-  command: "{{ project_command_for_bower_install }} chdir={{ deploy_helper.new_release_path }}"
+  ansible.builtin.command:
+    chdir: "{{ deploy_helper.new_release_path }}"
+    cmd: "{{ project_command_for_bower_install }}"
   environment: "{{ project_environment }}"
   when: project_has_bower
+  changed_when: false
 
 - name: Check if yarn dir exists
-  stat: path={{ deploy_helper.current_path }}/{{ project_yarn_components_path }}
+  ansible.builtin.stat:
+    path: "{{ deploy_helper.current_path }}/{{ project_yarn_components_path }}"
   register: check_yarn_components_path
   when: project_copy_previous_yarn_components
 
 - name: Copy yarn dir if exists to speed up yarn install
-  command: /bin/cp -rpT {{ deploy_helper.current_path }}/{{ project_yarn_components_path }} {{ deploy_helper.new_release_path }}/{{ project_yarn_components_path }}
+  ansible.builtin.command:
+    cmd: "/bin/cp -rpT {{ deploy_helper.current_path }}/{{ project_yarn_components_path }} {{ deploy_helper.new_release_path }}/{{
+      project_yarn_components_path }}"
   when: project_copy_previous_yarn_components and check_yarn_components_path.stat.exists
+  changed_when: false
 
 - name: Do yarn install
-  command: "{{ project_command_for_yarn_install }} chdir={{ deploy_helper.new_release_path }}"
+  ansible.builtin.command:
+    chdir: "{{ deploy_helper.new_release_path }}"
+    cmd: "{{ project_command_for_yarn_install }}"
   environment: "{{ project_environment }}"
   when: project_has_yarn
-
+  changed_when: false
 
 ### Make shared resources
 - name: Include make_shared_resources hook
-  include_tasks: "{{ project_deploy_hook_on_make_shared_resources }}"
+  ansible.builtin.include_tasks: "{{ project_deploy_hook_on_make_shared_resources }}"
   when: project_deploy_hook_on_make_shared_resources is defined
 
 - name: Ensure shared sources are present
-  file: "path='{{ deploy_helper.shared_path }}/{{ item.src }}' state={{ item.type|default('directory') }}"
+  ansible.builtin.file:
+    path: "{{ deploy_helper.shared_path }}/{{ item.src }}"
+    state: "{{ item.type | default('directory') }}"
+    mode: "{{ item.mode | default('0755') }}"
   with_items: "{{ project_shared_children }}"
 
 - name: Ensure directories for shared paths to go into are present
-  file: "path={{ [deploy_helper.new_release_path, item.path] | join('/') | dirname }} state=directory recurse=yes"
+  ansible.builtin.file:
+    path: "{{ [community.general.deploy_helper.new_release_path, item.path] | join('/') | dirname }}"
+    state: directory
+    recurse: "yes"
   with_items: "{{ project_shared_children }}"
 
 - name: Ensure shared paths themselves are absent
-  file: "path='{{ deploy_helper.new_release_path }}/{{ item.path }}' state=absent"
+  ansible.builtin.file:
+    path: "{{ deploy_helper.new_release_path }}/{{ item.path }}"
+    state: absent
   with_items: "{{ project_shared_children }}"
 
 - name: Create shared symlinks
-  file: "path='{{ deploy_helper.new_release_path }}/{{ item.path }}' src='{{ deploy_helper.shared_path }}/{{ item.src }}' state=link"
+  ansible.builtin.file:
+    path: "{{ deploy_helper.new_release_path }}/{{ item.path }}"
+    src: "{{ deploy_helper.shared_path }}/{{ item.src }}"
+    state: link
   with_items: "{{ project_shared_children }}"
-
 
 ### Finalize
 - name: Include finalize hook
-  include_tasks: "{{ project_deploy_hook_on_finalize }}"
+  ansible.builtin.include_tasks: "{{ project_deploy_hook_on_finalize }}"
   when: project_deploy_hook_on_finalize is defined
 
 - name: Run post_build_commands in the new_release_path
-  command: "{{ item }} chdir={{ deploy_helper.new_release_path }}"
+  ansible.builtin.command:
+    chdir: "{{ deploy_helper.new_release_path }}"
+    cmd: "{{ item }}"
   with_items: "{{ project_post_build_commands }}"
   environment: "{{ project_environment }}"
+  changed_when: false
 
 - name: Finalize the deploy
-  deploy_helper: path={{ project_root }} release={{ deploy_helper.new_release }} state=finalize clean={{ project_clean|bool }} keep_releases={{ project_keep_releases|int }}
+  community.general.deploy_helper:
+    path: "{{ project_root }}"
+    release: "{{ deploy_helper.new_release }}"
+    state: finalize
+    clean: "{{ project_clean | bool }}"
+    keep_releases: "{{ project_keep_releases | int }}"
   when: project_finalize

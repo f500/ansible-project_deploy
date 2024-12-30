@@ -301,6 +301,22 @@ You can also use the deploy module included with the role to clean up old releas
         - name: Remove old releases
           deploy_helper: "path={{ project_root }} state=clean"
 
+Linting
+-------
+Github actions will check this role with ansible-lint. To run this locally, you will need to follow the following steps:
+
+```bash
+brew install ansible-lint
+brew install yamllint
+ansible-lint
+```
+
+to fix the linting errors, run:
+
+```bash
+ansible-lint --fix
+```
+
 License
 -------
 

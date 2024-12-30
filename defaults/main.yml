@@ -20,7 +20,7 @@ project_version: "master"
 
 # DEPRECATED
 # For git, the .git folder is automatically removed
-#project_remove_git_folder: true
+# project_remove_git_folder: true
 
 # If you use the "rsync" strategy:
 # - you can set a timeout for the synchonize module
@@ -32,11 +32,11 @@ project_local_path: "../"
 
 # If you use the "s3" strategy:
 # - region of your bucket
-project_s3_region: 'eu-west-1'
+project_s3_region: "eu-west-1"
 # - your bucket
-project_s3_bucket: 'my-bucket'
+project_s3_bucket: "my-bucket"
 # - the path to the file to get
-project_s3_path: '/my-app/'
+project_s3_path: "/my-app/"
 # - file to get
 project_s3_filename: my-app-master.war
 # - final filename to write (usefull for tomcat/wars)
@@ -46,14 +46,13 @@ project_s3_filename: my-app-master.war
 # you do not have to download/sync the entire project on every deploy
 project_source_path: "{{ project_root }}/shared/source"
 
-# The shared_path is used to set the path for your shared assets. 
+# The shared_path is used to set the path for your shared assets.
 # Example:
 # project_shared_path: "/var/shared"
 project_shared_path: "{{ project_root }}/shared"
 
 # Files or folders to remove from the source when deploying
-project_unwanted_items: [ '.git' ]
-
+project_unwanted_items: [".git"]
 # DEPRECATED
 # The build_path is used to build your project in, prior to moving it to the release folder.
 # If it exists, this path will be deleted before a new build is started
@@ -108,11 +107,9 @@ project_yarn_components_path: node_modules
 #     src: "local-path-to-other-file"
 #     dest: "remote-path-to-other-file"
 project_files: []
-
 # All the templates to copy to the remote system on deploy. These could contain config files.
 # Works the same as the project_files
 project_templates: []
-
 # The shared_children is a list of all files/folders in your project that need to be linked to a path in "{{ project_shared_path }}.
 # For example a sessions directory or an uploads folder.. They are created if they don't exist, with the type
 # specified in the "type" key (file or directory).
@@ -121,16 +118,15 @@ project_templates: []
 #   - path: "/app/sessions"
 #     src: "sessions"
 #     type: "file" / "directory"  // <- optional, defaults to "directory"
+#     mode: "0755"  // <- optional, defaults to "0755"
 #   - path: "/web/uploads"
 #     src: "uploads"
 project_shared_children: []
-
 # The project_environment is a list of environment variables added to the various *_commands
 # Example:
 # project_environment:
 #   SYMFONY_ENV: "prod"
 project_environment: {}
-
 # HOOKS
 # At certain key points in the role an option exists to include a task file of your own:
 # project_deploy_hook_on_initialize
@@ -154,7 +150,6 @@ project_environment: {}
 #   - "app/console assetic:dump"
 project_pre_build_commands: []
 project_post_build_commands: []
-
 # At the end of the role, the unfinished_filename is removed and the "current" symlink is set to
 # the release. If you need to perform your own actions before this happens, set "project_finalize"
 # to false, and when you're ready, perform these tasks yourself:
