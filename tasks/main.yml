@@ -33,7 +33,7 @@
   when: project_deploy_strategy == 'synchronize'
 
 - name: S3 download project files
-  amazon.aws.aws_s3:
+  amazon.aws.s3_object:
     bucket: "{{ project_s3_bucket }}"
     mode: get
     object: "{{ project_s3_path }}/{{ project_s3_filename }}"
