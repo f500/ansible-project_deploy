@@ -196,7 +196,7 @@
 
 - name: Ensure directories for shared paths to go into are present
   ansible.builtin.file:
-    path: "{{ [community.general.deploy_helper.new_release_path, item.path] | join('/') | dirname }}"
+    path: "{{ [deploy_helper.new_release_path, item.path] | join('/') | dirname }}"
     state: directory
     recurse: "yes"
   with_items: "{{ project_shared_children }}"
