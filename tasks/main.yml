@@ -45,7 +45,7 @@
 
 - name: Write unfinished file
   ansible.builtin.file:
-    path: "{{ project_source_path }}/{{ deploy_helper.unfinished_filename }}"
+    path: "{{ project_source_path }}/{{ ansible_facts['deploy_helper']['unfinished_filename'] }}"
     state: touch
     mode: "0644"
 
@@ -54,26 +54,26 @@
   when: project_deploy_hook_on_create_build_dir is defined
 
 - name: Copy files to new build dir
-  ansible.builtin.command: "cp -prT {{ project_source_path }} {{ deploy_helper.new_release_path }}"
+  ansible.builtin.command: "cp -prT {{ project_source_path }} {{ ansible_facts['deploy_helper']['new_release_path'] }}"
   changed_when: false
 
 - name: Remove unwanted files/folders from new release
   ansible.builtin.file:
-    path: "{{ deploy_helper.new_release_path }}/{{ item }}"
+    path: "{{ ansible_facts['deploy_helper']['new_release_path'] }}/{{ item }}"
     state: absent
   with_items: "{{ project_unwanted_items }}"
 
 - name: Copy project files
   ansible.builtin.copy:
     src: "{{ item.src }}"
-    dest: "{{ deploy_helper.new_release_path }}/{{ item.dest }}"
+    dest: "{{ ansible_facts['deploy_helper']['new_release_path'] }}/{{ item.dest }}"
     mode: "{{ item.mode | default('0644') }}"
   with_items: "{{ project_files }}"
 
 - name: Copy project templates
   ansible.builtin.template:
     src: "{{ item.src }}"
-    dest: "{{ deploy_helper.new_release_path }}/{{ item.dest }}"
+    dest: "{{ ansible_facts['deploy_helper']['new_release_path'] }}/{{ item.dest }}"
     mode: "{{ item.mode | default('0644') }}"
   with_items: "{{ project_templates }}"
 
@@ -85,27 +85,27 @@
 - name: Run pre_build_commands in the new_release_path
   ansible.builtin.command:
     cmd: "{{ item }}"
-    chdir: "{{ deploy_helper.new_release_path }}"
+    chdir: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
   with_items: "{{ project_pre_build_commands }}"
   environment: "{{ project_environment }}"
   changed_when: false
 
 - name: Check if vendor dir exists
   ansible.builtin.stat:
-    path: "{{ deploy_helper.current_path }}/{{ project_composer_vendor_path }}"
+    path: "{{ ansible_facts['deploy_helper']['current_path'] }}/{{ project_composer_vendor_path }}"
   register: check_composer_vendor_path
   when: project_copy_previous_composer_vendors
 
 - name: Copy vendor dir if exists to speed up composer
   ansible.builtin.command:
-    cmd: "/bin/cp -prT {{ deploy_helper.current_path }}/{{ project_composer_vendor_path }} {{ deploy_helper.new_release_path }}/{{
+    cmd: "/bin/cp -prT {{ ansible_facts['deploy_helper']['current_path'] }}/{{ project_composer_vendor_path }} {{ ansible_facts['deploy_helper']['new_release_path'] }}/{{
       project_composer_vendor_path }}"
   when: project_copy_previous_composer_vendors and check_composer_vendor_path.stat.exists
   changed_when: false
 
 - name: Do composer install
   ansible.builtin.command:
-    chdir: "{{ deploy_helper.new_release_path }}"
+    chdir: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
     cmd: "{{ project_command_for_composer_install }}"
   environment: "{{ project_environment }}"
   when: project_has_composer
@@ -113,20 +113,20 @@
 
 - name: Check if npm dir exists
   ansible.builtin.stat:
-    path: "{{ deploy_helper.current_path }}/{{ project_npm_modules_path }}"
+    path: "{{ ansible_facts['deploy_helper']['current_path'] }}/{{ project_npm_modules_path }}"
   register: check_npm_modules_path
   when: project_copy_previous_npm_modules
 
 - name: Copy npm dir if exists to speed up npm install
   ansible.builtin.command:
-    cmd: "/bin/cp -prT {{ deploy_helper.current_path }}/{{ project_npm_modules_path }} {{ deploy_helper.new_release_path }}/{{
+    cmd: "/bin/cp -prT {{ ansible_facts['deploy_helper']['current_path'] }}/{{ project_npm_modules_path }} {{ ansible_facts['deploy_helper']['new_release_path'] }}/{{
       project_npm_modules_path }}"
   when: project_copy_previous_npm_modules and check_npm_modules_path.stat.exists
   changed_when: false
 
 - name: Do npm install
   ansible.builtin.command:
-    chdir: "{{ deploy_helper.new_release_path }}"
+    chdir: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
     cmd: "{{ project_command_for_npm_install }}"
   environment: "{{ project_environment }}"
   when: project_has_npm
@@ -134,7 +134,7 @@
 
 - name: Do npm build
   ansible.builtin.command:
-    chdir: "{{ deploy_helper.new_release_path }}"
+    chdir: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
     cmd: "{{ project_npm_binary }} run build"
   environment: "{{ project_environment }}"
   when: project_needs_npm_build
@@ -142,20 +142,20 @@
 
 - name: Check if bower dir exists
   ansible.builtin.stat:
-    path: "{{ deploy_helper.current_path }}/{{ project_bower_components_path }}"
+    path: "{{ ansible_facts['deploy_helper']['current_path'] }}/{{ project_bower_components_path }}"
   register: check_bower_components_path
   when: project_copy_previous_bower_components
 
 - name: Copy bower dir if exists to speed up bower install
   ansible.builtin.command:
-    cmd: "/bin/cp -prT {{ deploy_helper.current_path }}/{{ project_bower_components_path }} {{ deploy_helper.new_release_path
+    cmd: "/bin/cp -prT {{ ansible_facts['deploy_helper']['current_path'] }}/{{ project_bower_components_path }} {{ ansible_facts['deploy_helper']['new_release_path']
       }}/{{ project_bower_components_path }}"
   when: project_copy_previous_bower_components and check_bower_components_path.stat.exists
   changed_when: false
 
 - name: Do bower install
   ansible.builtin.command:
-    chdir: "{{ deploy_helper.new_release_path }}"
+    chdir: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
     cmd: "{{ project_command_for_bower_install }}"
   environment: "{{ project_environment }}"
   when: project_has_bower
@@ -163,20 +163,20 @@
 
 - name: Check if yarn dir exists
   ansible.builtin.stat:
-    path: "{{ deploy_helper.current_path }}/{{ project_yarn_components_path }}"
+    path: "{{ ansible_facts['deploy_helper']['current_path'] }}/{{ project_yarn_components_path }}"
   register: check_yarn_components_path
   when: project_copy_previous_yarn_components
 
 - name: Copy yarn dir if exists to speed up yarn install
   ansible.builtin.command:
-    cmd: "/bin/cp -rpT {{ deploy_helper.current_path }}/{{ project_yarn_components_path }} {{ deploy_helper.new_release_path }}/{{
+    cmd: "/bin/cp -rpT {{ ansible_facts['deploy_helper']['current_path'] }}/{{ project_yarn_components_path }} {{ ansible_facts['deploy_helper']['new_release_path'] }}/{{
       project_yarn_components_path }}"
   when: project_copy_previous_yarn_components and check_yarn_components_path.stat.exists
   changed_when: false
 
 - name: Do yarn install
   ansible.builtin.command:
-    chdir: "{{ deploy_helper.new_release_path }}"
+    chdir: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
     cmd: "{{ project_command_for_yarn_install }}"
   environment: "{{ project_environment }}"
   when: project_has_yarn
@@ -189,28 +189,28 @@
 
 - name: Ensure shared sources are present
   ansible.builtin.file:
-    path: "{{ deploy_helper.shared_path }}/{{ item.src }}"
+    path: "{{ ansible_facts['deploy_helper']['shared_path'] }}/{{ item.src }}"
     state: "{{ item.type | default('directory') }}"
     mode: "{{ item.mode | default('0755') }}"
   with_items: "{{ project_shared_children }}"
 
 - name: Ensure directories for shared paths to go into are present
   ansible.builtin.file:
-    path: "{{ [deploy_helper.new_release_path, item.path] | join('/') | dirname }}"
+    path: "{{ [ansible_facts['deploy_helper']['new_release_path'], item.path] | join('/') | dirname }}"
     state: directory
     recurse: "yes"
   with_items: "{{ project_shared_children }}"
 
 - name: Ensure shared paths themselves are absent
   ansible.builtin.file:
-    path: "{{ deploy_helper.new_release_path }}/{{ item.path }}"
+    path: "{{ ansible_facts['deploy_helper']['new_release_path'] }}/{{ item.path }}"
     state: absent
   with_items: "{{ project_shared_children }}"
 
 - name: Create shared symlinks
   ansible.builtin.file:
-    path: "{{ deploy_helper.new_release_path }}/{{ item.path }}"
-    src: "{{ deploy_helper.shared_path }}/{{ item.src }}"
+    path: "{{ ansible_facts['deploy_helper']['new_release_path'] }}/{{ item.path }}"
+    src: "{{ ansible_facts['deploy_helper']['shared_path'] }}/{{ item.src }}"
     state: link
   with_items: "{{ project_shared_children }}"
 
@@ -221,7 +221,7 @@
 
 - name: Run post_build_commands in the new_release_path
   ansible.builtin.command:
-    chdir: "{{ deploy_helper.new_release_path }}"
+    chdir: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
     cmd: "{{ item }}"
   with_items: "{{ project_post_build_commands }}"
   environment: "{{ project_environment }}"
@@ -230,7 +230,7 @@
 - name: Finalize the deploy
   community.general.deploy_helper:
     path: "{{ project_root }}"
-    release: "{{ deploy_helper.new_release }}"
+    release: "{{ ansible_facts['deploy_helper']['new_release'] }}"
     state: finalize
     clean: "{{ project_clean | bool }}"
     keep_releases: "{{ project_keep_releases | int }}"

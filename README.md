@@ -168,7 +168,7 @@ To speed up composer/npm/bower install it is possible to copy the vendor/node_mo
     project_copy_previous_npm_modules: true
     project_copy_previous_bower_components: true
 
-You can also change the path of the installed vendors (relative to {{ deploy_helper.new_release_path }}):
+You can also change the path of the installed vendors (relative to {{ ansible_facts['deploy_helper'].['new_release_path'] }}):
 
     project_composer_vendor_path: vendor
     project_npm_modules_path: node_modules
@@ -255,7 +255,7 @@ When you're ready, perform the symlink task yourself (in post_tasks for example)
 
 When you're ready, finalize the deploy with the module:
 
-    - deploy_helper: path={{ project_root }} release={{ deploy_helper.new_release }} state=finalize
+    - deploy_helper: path={{ project_root }} release={{ ansible_facts['deploy_helper'].['new_release'] }} state=finalize
 
 If you do want to finalize and have the role switch the "current" symlink, but
 don't want to clean up old releases, set "project_clean" to false:
