@@ -3,6 +3,10 @@ project_deploy
 
 Deploy a project with Ansible
 
+### Changelog 4.4.0
+
+- do not assume facts are injected. Replaces all usages of `deploy_helper.var` with `ansible_facts['deploy_helper']['var']`.
+
 ### Changelog 4.0.0 BC BREAK. Set your galaxy version to v3.2.0 for Ansible 2.3 or less.
 
 - replaced deprecated "include" with "include_tasks".
@@ -255,7 +259,7 @@ When you're ready, perform the symlink task yourself (in post_tasks for example)
 
 When you're ready, finalize the deploy with the module:
 
-    - deploy_helper: path={{ project_root }} release={{ ansible_facts['deploy_helper'].['new_release'] }} state=finalize
+    - deploy_helper: path={{ project_root }} release={{ ansible_facts['deploy_helper']['new_release'] }} state=finalize
 
 If you do want to finalize and have the role switch the "current" symlink, but
 don't want to clean up old releases, set "project_clean" to false:
